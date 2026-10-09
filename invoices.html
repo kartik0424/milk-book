@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices & Monthly Billing - MilkBook</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS with cache-busting -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.2">
+    <style>
+        .range-quick-chip {
+            font-size: 0.78rem !important;
+            font-weight: 600 !important;
+            padding: 0.35rem 0.85rem !important;
+            border-radius: 9999px !important;
+            border: 1px solid #cbd5e1 !important;
+            background-color: #f8fafc !important;
+            color: #475569 !important;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            white-space: nowrap;
+            outline: none !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        }
+        .range-quick-chip:hover {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+            border-color: #94a3b8 !important;
+        }
+        .range-quick-chip.active {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation (hidden on print) -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top no-print">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-controls="milkNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header no-print">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-receipt-cutoff text-primary"></i> Monthly Invoices & Billing</h1>
+                        <p class="page-subtitle">Generate bills, track previous balances, send WhatsApp statements & print A4 receipts</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-md-4">
+            <!-- =========================================================
+                 SECTION 1: GENERATE INVOICES PANEL
+            ========================================================== -->
+            <div class="card-milk p-3 p-md-4 mb-4 no-print">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                    <div>
+                        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-calculator-fill text-primary"></i> Generate Customer Bills
+                        </h5>
+                        <small class="text-muted">Generate dynamic bills by custom date range or calendar month from attendance</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#generatePanelCollapse" aria-expanded="true">
+                        <i class="bi bi-chevron-up"></i>
+                    </button>
+                </div>
+
+                <div class="collapse show" id="generatePanelCollapse">
+                    <!-- Mode Switcher Tabs -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="small fw-semibold text-muted me-1">Billing Period:</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-primary fw-semibold px-3" id="mode-btn-range" onclick="switchBillingMode('range')">
+                                <i class="bi bi-calendar-range me-1"></i> Date Range
+                            </button>
+                            <button type="button" class="btn btn-outline-primary fw-semibold px-3" id="mode-btn-month" onclick="switchBillingMode('month')">
+                                <i class="bi bi-calendar-month me-1"></i> Full Month
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row A: Date Range Inputs (Default) -->
+                    <div id="row-range-inputs" class="row g-2 align-items-end mb-3">
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="gen-from-date" class="form-label fw-semibold small mb-1">From Date</label>
+                            <input type="date" class="form-control fw-bold text-primary" id="gen-from-date">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="gen-to-date" class="form-label fw-semibold small mb-1">To Date</label>
+                            <input type="date" class="form-control fw-bold text-primary" id="gen-to-date">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold small mb-1 text-muted">Quick Presets</label>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button type="button" class="btn btn-sm range-quick-chip active" onclick="setPresetRange('this-month')">This Month</button>
+                                <button type="button" class="btn btn-sm range-quick-chip" onclick="setPresetRange('last-month')">Last Month</button>
+                                <button type="button" class="btn btn-sm range-quick-chip" onclick="setPresetRange('1-to-15')">1st - 15th</button>
+                                <button type="button" class="btn btn-sm range-quick-chip" onclick="setPresetRange('16-to-end')">16th - End</button>
+                                <button type="button" class="btn btn-sm range-quick-chip" onclick="setPresetRange('last-7')">Last 7 Days</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row B: Month / Year Inputs (Hidden by default) -->
+                    <div id="row-month-inputs" class="row g-3 align-items-end mb-3 d-none">
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="gen-month" class="form-label fw-semibold small mb-1">Billing Month</label>
+                            <select class="form-select fw-bold text-primary" id="gen-month">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="gen-year" class="form-label fw-semibold small mb-1">Billing Year</label>
+                            <select class="form-select fw-bold text-primary" id="gen-year">
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Row C: Customer Selection & Action Button -->
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-6">
+                            <label for="gen-customer" class="form-label fw-semibold small mb-1">Target Customer</label>
+                            <select class="form-select" id="gen-customer">
+                                <option value="all">★ All Active Customers</option>
+                                <!-- Loaded dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 d-flex gap-2">
+                            <button type="button" class="btn btn-milk-primary w-100 shadow-sm py-2" id="btn-preview-invoices">
+                                <i class="bi bi-calendar2-check-fill me-1"></i> Fetch Deliveries & Preview
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Preview Container (Hidden until user clicks Preview) -->
+                    <div id="preview-results-box" class="d-none mt-4 pt-3 border-top">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h6 class="fw-bold mb-1" id="preview-title">Invoice Preview</h6>
+                                <span class="small text-muted" id="preview-meta"></span>
+                            </div>
+
+                            <!-- Missing Days Option -->
+                            <div class="d-flex align-items-center gap-2 bg-light p-2 rounded border">
+                                <label class="small fw-semibold mb-0 me-1">Unrecorded Days:</label>
+                                <div class="form-check form-check-inline mb-0">
+                                    <input class="form-check-input" type="radio" name="missing_days_opt" id="opt-ignore" value="ignore" checked>
+                                    <label class="form-check-label small" for="opt-ignore">Ignore Gaps</label>
+                                </div>
+                                <div class="form-check form-check-inline mb-0">
+                                    <input class="form-check-input" type="radio" name="missing_days_opt" id="opt-fill" value="fill">
+                                    <label class="form-check-label small" for="opt-fill">Fill Committed Qty</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Table -->
+                        <div class="table-responsive mb-3" style="max-height: 400px;">
+                            <table class="table table-sm table-hover align-middle border">
+                                <thead class="table-light sticky-top">
+                                    <tr class="small text-muted text-uppercase">
+                                        <th>Customer</th>
+                                        <th class="text-center">Days</th>
+                                        <th class="text-center">Litres</th>
+                                        <th class="text-end">Milk Amount</th>
+                                        <th class="text-end">Previous Balance</th>
+                                        <th class="text-end">Total Payable</th>
+                                        <th class="text-center">Status / Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="preview-table-body">
+                                    <!-- Injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Action Bar for Generating -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light p-3 rounded border">
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <span class="small text-muted d-block">READY TO BILL</span>
+                                    <span class="fw-bold text-success" id="preview-ready-count">0 Customers</span>
+                                </div>
+                                <div class="vr"></div>
+                                <div>
+                                    <span class="small text-muted d-block">TOTAL PAYABLE SUM</span>
+                                    <span class="fw-bold text-primary fs-5" id="preview-payable-sum">₹0.00</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-light border" id="btn-cancel-preview">Cancel</button>
+                                <button type="button" class="btn btn-success px-4 fw-bold shadow-sm" id="btn-execute-generate">
+                                    <i class="bi bi-check2-circle me-1"></i> Generate Invoice(s) Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 SECTION 2: INVOICES DIRECTORY
+            ========================================================== -->
+            <div class="card-milk p-3 mb-4 no-print">
+                <!-- Directory Controls: Filters & Search -->
+                <div class="row g-2 align-items-center justify-content-between mb-3">
+                    <div class="col-12 col-md-5">
+                        <div class="search-input-group">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" class="form-control" id="inv-search-input" placeholder="Search by customer, mobile, or invoice #...">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-7 d-flex flex-wrap justify-content-md-end align-items-center gap-2">
+                        <!-- Status Filter Pills -->
+                        <div class="btn-group filter-pill-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-status="all">All</button>
+                            <button type="button" class="btn btn-outline-danger" data-status="unpaid">Unpaid</button>
+                            <button type="button" class="btn btn-outline-warning" data-status="partial">Partial</button>
+                            <button type="button" class="btn btn-outline-success" data-status="paid">Paid</button>
+                        </div>
+
+                        <!-- Month & Year Filters -->
+                        <div class="d-flex gap-1">
+                            <select class="form-select form-select-sm" id="filter-month" style="width: 120px;">
+                                <option value="">All Months</option>
+                                <option value="1">Jan</option>
+                                <option value="2">Feb</option>
+                                <option value="3">Mar</option>
+                                <option value="4">Apr</option>
+                                <option value="5">May</option>
+                                <option value="6">Jun</option>
+                                <option value="7">Jul</option>
+                                <option value="8">Aug</option>
+                                <option value="9">Sep</option>
+                                <option value="10">Oct</option>
+                                <option value="11">Nov</option>
+                                <option value="12">Dec</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="filter-year" style="width: 90px;">
+                                <option value="">All Years</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Summary Stat Chips -->
+                <div class="d-flex flex-wrap gap-2 mb-3 pt-2 border-top">
+                    <span class="badge bg-light text-dark border px-3 py-2">
+                        Total Invoices: <strong id="stat-inv-count">0</strong>
+                    </span>
+                    <span class="badge bg-light text-primary border px-3 py-2">
+                        Total Billed: <strong id="stat-inv-billed">₹0.00</strong>
+                    </span>
+                    <span class="badge bg-light text-success border px-3 py-2">
+                        Total Collected: <strong id="stat-inv-paid">₹0.00</strong>
+                    </span>
+                    <span class="badge bg-light text-danger border px-3 py-2">
+                        Pending Dues: <strong id="stat-inv-pending">₹0.00</strong>
+                    </span>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table table-milk align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 140px;">Invoice #</th>
+                                <th>Customer</th>
+                                <th>Period</th>
+                                <th class="text-center">Days / Qty</th>
+                                <th class="text-end">Milk Charges</th>
+                                <th class="text-end">Prev Balance</th>
+                                <th class="text-end">Total Payable</th>
+                                <th class="text-center">Status</th>
+                                <th style="width: 150px;" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-table-body">
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                    <p class="mb-0 small">Loading invoices directory...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Cards View -->
+                <div class="d-md-none" id="invoice-cards-body">
+                    <div class="text-center py-5 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                        <p class="mb-0 small">Loading invoices...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Nav Strip (hidden on print) -->
+    <nav class="mobile-nav-strip d-md-none no-print">
+        <a href="index.html" class="mobile-nav-item"><i class="bi bi-speedometer2"></i><span>Home</span></a>
+        <a href="deliveries.html" class="mobile-nav-item"><i class="bi bi-truck"></i><span>Deliveries</span></a>
+        <a href="invoices.html" class="mobile-nav-item active"><i class="bi bi-receipt"></i><span>Invoices</span></a>
+        <a href="payments.html" class="mobile-nav-item"><i class="bi bi-cash-coin"></i><span>Payments</span></a>
+        <a href="customers.html" class="mobile-nav-item"><i class="bi bi-people-fill"></i><span>Customers</span></a>
+        <a href="settings.html" class="mobile-nav-item"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
+    </nav>
+
+    <!-- =============================================================
+         MODAL: PRINTABLE A4 INVOICE SHEET
+    ============================================================== -->
+    <div class="modal fade" id="invoiceViewModal" tabindex="-1" aria-labelledby="invoiceViewModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header no-print py-2">
+                    <h5 class="modal-title fs-6 fw-bold" id="invoiceViewModalTitle">
+                        <i class="bi bi-receipt text-primary me-2"></i>Invoice View
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-success" id="modal-btn-whatsapp">
+                            <i class="bi bi-whatsapp me-1"></i> Send on WhatsApp
+                        </button>
+                        <button type="button" class="btn btn-sm btn-milk-primary" onclick="window.print()">
+                            <i class="bi bi-printer-fill me-1"></i> Print / Save PDF
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+
+                <div class="modal-body p-2 p-md-4" style="background-color: #f1f5f9;">
+                    <!-- Clean Printable A4 Layout Sheet -->
+                    <div class="invoice-paper" id="printable-invoice-content">
+                        <!-- Invoice Header -->
+                        <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="invoice-brand-logo"><i class="bi bi-droplet-half"></i></span>
+                                <div>
+                                    <h4 class="fw-bold mb-0 text-primary" id="inv-biz-name">Krishna Dairy Farm</h4>
+                                    <div class="small text-muted" id="inv-biz-address">Gokul Dairy Road, Anand, Gujarat</div>
+                                    <div class="small text-muted"><i class="bi bi-telephone me-1"></i><span id="inv-biz-phone">9876543210</span></div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary fs-6 px-3 py-1 mb-1">MILK BILL</span>
+                                <div class="invoice-meta-val fs-6 text-dark" id="inv-detail-no">MB-202609-0001</div>
+                                <div class="small text-muted">Date: <span id="inv-detail-date">21 Sep 2026</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Bill To & Period Info Cards (Balanced 50/50 Grid) -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="invoice-meta-label mb-2"><i class="bi bi-person me-1 text-primary"></i>Billed To</div>
+                                        <div class="fw-bold fs-6 text-dark mb-1" id="inv-cust-name">Customer Name</div>
+                                        <div class="small text-muted mb-2 text-break" id="inv-cust-address">Customer Address</div>
+                                    </div>
+                                    <div class="small text-dark fw-medium pt-2 border-top">
+                                        <i class="bi bi-telephone me-1 text-muted"></i><span id="inv-cust-mobile">9876543210</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="invoice-meta-label"><i class="bi bi-calendar3 me-1 text-primary"></i>Billing Period</div>
+                                            <span class="invoice-status-badge" id="inv-detail-status"><i class="bi bi-check-circle"></i> Paid</span>
+                                        </div>
+                                        <div class="fw-bold text-primary fs-6 mb-1" id="inv-detail-period">September 2026</div>
+                                        <div class="small text-muted mb-2" id="inv-detail-date-range">01 Sep 2026 — 30 Sep 2026</div>
+                                    </div>
+                                    <div class="small text-muted pt-2 border-top d-flex justify-content-between align-items-center">
+                                        <span>Invoice Date:</span>
+                                        <span class="fw-semibold text-dark" id="inv-detail-date-sub">04 Oct 2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Compact Day-wise Delivery Matrix -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="invoice-meta-label"><i class="bi bi-calendar2-check me-1 text-primary"></i>Daily Delivery Log</div>
+                                <span class="badge bg-light text-secondary border fw-normal" id="inv-day-grid-meta">Delivery Log</span>
+                            </div>
+                            <div class="invoice-day-grid" id="inv-day-grid">
+                                <!-- Days Injected Here -->
+                            </div>
+                        </div>
+
+                        <!-- Rate Breakdown Line Items -->
+                        <div class="table-responsive rounded-3 border mb-3">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr class="small text-muted text-uppercase fw-bold">
+                                        <th style="width: 44%; padding: 0.65rem 0.85rem;">Description</th>
+                                        <th style="width: 14%; padding: 0.65rem 0.5rem;" class="text-center">Days</th>
+                                        <th style="width: 14%; padding: 0.65rem 0.5rem;" class="text-center">Total Litres</th>
+                                        <th style="width: 14%; padding: 0.65rem 0.5rem;" class="text-end">Rate / Litre</th>
+                                        <th style="width: 14%; padding: 0.65rem 0.85rem;" class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inv-line-items-body">
+                                    <!-- Injected Here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Financial Summary & UPI Row -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <!-- UPI Payment Info Box -->
+                                <div class="invoice-upi-box">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="fw-bold text-dark fs-6"><i class="bi bi-qr-code me-1 text-primary"></i> Scan & Pay via UPI</div>
+                                            <span class="badge bg-white text-primary border">Instant Pay</span>
+                                        </div>
+                                        <div class="small text-muted mb-2">Scan QR code using GPay, PhonePe, Paytm, or BHIM:</div>
+                                        
+                                        <!-- QR Code & UPI ID Card -->
+                                        <div class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 border mb-2">
+                                            <div class="text-center flex-shrink-0">
+                                                <img id="inv-upi-qr" src="" alt="UPI QR Code" style="width: 80px; height: 80px; object-fit: contain; border-radius: 6px; display: block;" onerror="this.style.display='none'; document.getElementById('inv-upi-qr-fallback').style.display='flex';">
+                                                <div id="inv-upi-qr-fallback" class="bg-light border rounded align-items-center justify-content-center text-muted" style="width: 80px; height: 80px; display: none;">
+                                                    <i class="bi bi-qr-code fs-2"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <div class="small text-muted mb-1" style="font-size: 0.75rem;">Pay to UPI ID:</div>
+                                                <div class="input-group input-group-sm mb-1">
+                                                    <input type="text" class="form-control fw-bold font-monospace bg-light text-dark border-end-0 px-2" style="font-size: 0.78rem;" id="inv-upi-id" value="krishnadairy@okaxis" readonly>
+                                                    <button class="btn btn-outline-secondary border-start-0 px-2" type="button" onclick="navigator.clipboard.writeText(document.getElementById('inv-upi-id').value); ui.toast('UPI ID copied to clipboard!', 'success');" title="Copy UPI ID">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="small text-muted" style="font-size: 0.75rem;">Amount: <strong class="text-primary font-monospace" id="inv-upi-amount">₹0.00</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-between small text-muted pt-2 border-top mt-auto">
+                                        <span><i class="bi bi-shield-check text-success me-1"></i>Secure UPI Payment</span>
+                                        <span style="font-size: 0.72rem;">GPay • PhonePe • Paytm</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="invoice-summary-box">
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Current Month Milk:</span>
+                                            <strong class="font-monospace" id="inv-sum-milk">₹0.00</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted" id="inv-sum-prev-label">Previous Balance:</span>
+                                            <strong class="font-monospace" id="inv-sum-prev">₹0.00</strong>
+                                        </div>
+                                        <div class="invoice-payable-highlight d-flex justify-content-between align-items-center my-2 p-2 px-3 rounded-2">
+                                            <span class="fw-bold text-primary">Total Payable:</span>
+                                            <span class="fs-5 fw-bold text-primary font-monospace" id="inv-sum-payable">₹0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between small text-muted mb-1">
+                                            <span>Payments Received:</span>
+                                            <span class="font-monospace" id="inv-sum-paid">₹0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold pt-2 mt-auto border-top fs-6" id="inv-sum-due-row">
+                                        <span id="inv-sum-due-label">Balance Due:</span>
+                                        <span class="font-monospace" id="inv-sum-due">₹0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Terms Note -->
+                        <div class="border-top pt-2 text-center text-muted small" id="inv-detail-footer">
+                            Thank you for choosing fresh & pure milk! Please clear dues before the 5th.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Invoices Page Logic -->
+    <script>
+        // State
+        let allInvoices = [];
+        let allCustomers = [];
+        let currentInvoiceDetail = null;
+        let invoiceViewModal = null;
+        let previewCache = null;
+        let billingMode = 'range'; // 'range' | 'month'
+
+        function switchBillingMode(mode) {
+            billingMode = mode;
+            const btnRange = document.getElementById('mode-btn-range');
+            const btnMonth = document.getElementById('mode-btn-month');
+            const rowRange = document.getElementById('row-range-inputs');
+            const rowMonth = document.getElementById('row-month-inputs');
+
+            if (mode === 'range') {
+                btnRange.classList.add('btn-primary');
+                btnRange.classList.remove('btn-outline-primary');
+                btnMonth.classList.add('btn-outline-primary');
+                btnMonth.classList.remove('btn-primary');
+
+                rowRange.classList.remove('d-none');
+                rowMonth.classList.add('d-none');
+            } else {
+                btnMonth.classList.add('btn-primary');
+                btnMonth.classList.remove('btn-outline-primary');
+                btnRange.classList.add('btn-outline-primary');
+                btnRange.classList.remove('btn-primary');
+
+                rowMonth.classList.remove('d-none');
+                rowRange.classList.add('d-none');
+            }
+        }
+
+        function setPresetRange(preset) {
+            const today = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const toYMD = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+            let fromD, toD;
+            const y = today.getFullYear();
+            const m = today.getMonth(); // 0-based
+
+            if (preset === 'this-month') {
+                fromD = new Date(y, m, 1);
+                toD = today;
+            } else if (preset === 'last-month') {
+                fromD = new Date(y, m - 1, 1);
+                toD = new Date(y, m, 0); // last day of prev month
+            } else if (preset === '1-to-15') {
+                fromD = new Date(y, m, 1);
+                toD = new Date(y, m, 15);
+            } else if (preset === '16-to-end') {
+                fromD = new Date(y, m, 16);
+                toD = new Date(y, m + 1, 0); // last day of this month
+            } else if (preset === 'last-7') {
+                fromD = new Date(today);
+                fromD.setDate(today.getDate() - 6);
+                toD = today;
+            }
+
+            if (fromD && toD) {
+                document.getElementById('gen-from-date').value = toYMD(fromD);
+                document.getElementById('gen-to-date').value = toYMD(toD);
+            }
+
+            // Update chip active styling
+            document.querySelectorAll('.range-quick-chip').forEach(chip => {
+                const isMatch = chip.getAttribute('onclick')?.includes(`'${preset}'`);
+                chip.classList.toggle('active', isMatch);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            invoiceViewModal = new bootstrap.Modal(document.getElementById('invoiceViewModal'));
+
+            // Default date range preset
+            setPresetRange('this-month');
+
+            // Default generate selectors: previous month
+            const now = new Date();
+            let prevMonth = now.getMonth(); // 0-indexed: previous month number (1..12 when adjusted)
+            let prevYear = now.getFullYear();
+            if (prevMonth === 0) {
+                prevMonth = 12;
+                prevYear -= 1;
+            }
+
+            document.getElementById('gen-month').value = prevMonth;
+            document.getElementById('gen-year').value = prevYear;
+
+            // Load active customers into dropdown
+            loadCustomerDropdown();
+
+            // Load invoices list
+            loadInvoices();
+
+            // Event Listeners
+            document.getElementById('btn-preview-invoices').addEventListener('click', loadPreview);
+            document.getElementById('btn-cancel-preview').addEventListener('click', () => {
+                document.getElementById('preview-results-box').classList.add('d-none');
+            });
+            document.getElementById('btn-execute-generate').addEventListener('click', executeInvoiceGeneration);
+
+            // Filter controls
+            document.getElementById('inv-search-input').addEventListener('input', () => renderInvoices());
+            document.getElementById('filter-month').addEventListener('change', () => loadInvoices());
+            document.getElementById('filter-year').addEventListener('change', () => loadInvoices());
+
+            document.querySelectorAll('.filter-pill-group button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill-group button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    loadInvoices();
+                });
+            });
+
+            // WhatsApp modal button
+            document.getElementById('modal-btn-whatsapp').addEventListener('click', () => {
+                if (currentInvoiceDetail) {
+                    sendWhatsAppInvoice(currentInvoiceDetail);
+                }
+            });
+        });
+
+        async function loadCustomerDropdown() {
+            try {
+                const res = await api.get('api/customers.php?status=active');
+                allCustomers = res.customers || [];
+                const select = document.getElementById('gen-customer');
+                allCustomers.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = `#${c.route_order} - ${c.name} (${c.committed_qty} L/day)`;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error('Failed to load customers for dropdown:', err);
+            }
+        }
+
+        // =============================================================
+        // INVOICE PREVIEW LOGIC
+        // =============================================================
+        async function loadPreview() {
+            const btn = document.getElementById('btn-preview-invoices');
+            const targetCustomer = document.getElementById('gen-customer').value;
+
+            let url = 'api/invoices.php?preview=1&customer_id=' + encodeURIComponent(targetCustomer);
+
+            if (billingMode === 'range') {
+                const fromDate = document.getElementById('gen-from-date').value;
+                const toDate = document.getElementById('gen-to-date').value;
+                if (!fromDate || !toDate) {
+                    ui.toast('Please select both From Date and To Date.', 'warning');
+                    return;
+                }
+                if (fromDate > toDate) {
+                    ui.toast('From Date cannot be later than To Date.', 'warning');
+                    return;
+                }
+                url += `&from_date=${encodeURIComponent(fromDate)}&to_date=${encodeURIComponent(toDate)}`;
+            } else {
+                const month = document.getElementById('gen-month').value;
+                const year = document.getElementById('gen-year').value;
+                url += `&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}`;
+            }
+
+            ui.setLoading(btn, true, 'Calculating...');
+
+            try {
+                const res = await api.get(url);
+                previewCache = res;
+                renderPreview(res);
+            } catch (err) {
+                console.error('Preview failed:', err);
+                ui.toast(err.message || 'Failed to fetch preview.', 'danger');
+            } finally {
+                ui.setLoading(btn, false);
+            }
+        }
+
+        function renderPreview(data) {
+            const box = document.getElementById('preview-results-box');
+            const tbody = document.getElementById('preview-table-body');
+            box.classList.remove('d-none');
+
+            // Check if single or bulk
+            const isSingle = !data.customers;
+            const list = isSingle ? [data] : data.customers;
+
+            const monthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let titleText = '';
+            if (data.from_date && data.to_date) {
+                titleText = `Invoice Preview: ${ui.formatDate(data.from_date)} - ${ui.formatDate(data.to_date)}`;
+            } else {
+                const monthStr = monthNames[data.month || document.getElementById('gen-month').value];
+                const yearStr = data.year || document.getElementById('gen-year').value;
+                titleText = `Invoice Preview for ${monthStr} ${yearStr}`;
+            }
+
+            document.getElementById('preview-title').textContent = titleText;
+            document.getElementById('preview-meta').textContent = `${list.length} customer(s) evaluated`;
+
+            let readyCount = 0;
+            let totalPayable = 0.00;
+
+            let html = '';
+            list.forEach(item => {
+                readyCount++;
+                totalPayable += (item.total_payable || 0);
+
+                // Prev balance tag
+                let prevBalHtml = '';
+                if (item.previous_balance > 0) {
+                    prevBalHtml = `<span class="text-danger fw-semibold">+${ui.formatCurrency(item.previous_balance)}</span><br><small class="text-muted">Pending dues</small>`;
+                } else if (item.previous_balance < 0) {
+                    prevBalHtml = `<span class="text-success fw-semibold">${ui.formatCurrency(item.previous_balance)}</span><br><small class="text-muted">Advance credit</small>`;
+                } else {
+                    prevBalHtml = `<span class="text-muted">₹0.00</span>`;
+                }
+
+                // Warnings & Status
+                let tags = [];
+                if (item.has_invoice) {
+                    tags.push(`<span class="badge bg-info-subtle text-primary border"><i class="bi bi-info-circle me-1"></i>Prior bill exists (${ui.escapeHtml(item.existing_invoice)})</span>`);
+                }
+                if (item.unrecorded_count > 0) {
+                    tags.push(`<span class="badge bg-warning-subtle text-warning-emphasis border"><i class="bi bi-exclamation-triangle me-1"></i>${item.unrecorded_count} missing days</span>`);
+                }
+                if (item.is_premature) {
+                    tags.push(`<span class="badge bg-secondary-subtle text-secondary border"><i class="bi bi-clock-history me-1"></i>Ongoing period</span>`);
+                }
+                if (item.days_delivered === 0) {
+                    tags.push(`<span class="badge bg-light text-muted border">0 delivered</span>`);
+                }
+
+                const statusHtml = tags.length > 0 
+                    ? tags.join(' ') 
+                    : `<span class="badge bg-success-subtle text-success border"><i class="bi bi-check2 me-1"></i>Ready to Bill</span>`;
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="fw-bold">${ui.escapeHtml(item.customer_name)}</div>
+                            <div class="small text-muted">${ui.escapeHtml(item.customer_mobile)}</div>
+                        </td>
+                        <td class="text-center font-monospace">${item.days_delivered}</td>
+                        <td class="text-center font-monospace fw-semibold">${item.total_qty.toFixed(2)} L</td>
+                        <td class="text-end font-monospace">${ui.formatCurrency(item.milk_amount)}</td>
+                        <td class="text-end font-monospace">${prevBalHtml}</td>
+                        <td class="text-end font-monospace fw-bold fs-6 text-primary">${ui.formatCurrency(item.total_payable)}</td>
+                        <td class="text-center">${statusHtml}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('preview-ready-count').textContent = `${readyCount} / ${list.length} Customers`;
+            document.getElementById('preview-payable-sum').textContent = ui.formatCurrency(totalPayable);
+
+            // Enable or disable generate button
+            document.getElementById('btn-execute-generate').disabled = (readyCount === 0);
+        }
+
+        async function executeInvoiceGeneration() {
+            if (!previewCache) return;
+
+            const targetCustomer = document.getElementById('gen-customer').value;
+            const missingDays = document.querySelector('input[name="missing_days_opt"]:checked')?.value || 'ignore';
+
+            const payload = {
+                missing_days: missingDays
+            };
+
+            let confirmMsg = '';
+            if (billingMode === 'range') {
+                const fromDate = document.getElementById('gen-from-date').value;
+                const toDate = document.getElementById('gen-to-date').value;
+                if (!fromDate || !toDate) {
+                    ui.toast('Please select both From Date and To Date.', 'warning');
+                    return;
+                }
+                payload.from_date = fromDate;
+                payload.to_date = toDate;
+                confirmMsg = `Generate invoice(s) for period ${ui.formatDate(fromDate)} to ${ui.formatDate(toDate)}?`;
+            } else {
+                const month = parseInt(document.getElementById('gen-month').value);
+                const year = parseInt(document.getElementById('gen-year').value);
+                payload.month = month;
+                payload.year = year;
+                confirmMsg = `Generate monthly invoice(s) for ${month}/${year}?`;
+            }
+
+            if (targetCustomer === 'all') {
+                payload.all = true;
+            } else {
+                payload.customer_id = parseInt(targetCustomer);
+            }
+
+            const confirmed = await ui.confirm({
+                title: 'Confirm Invoice Generation',
+                message: confirmMsg,
+                confirmText: 'Generate Invoices',
+                confirmClass: 'btn-success'
+            });
+
+            if (!confirmed) return;
+
+            const btn = document.getElementById('btn-execute-generate');
+            ui.setLoading(btn, true, 'Generating Invoices...');
+
+            try {
+                const res = await api.post('api/invoices.php', payload, { silent: true });
+                ui.toast(`Successfully generated ${res.created_count} invoice(s)!`, 'success');
+
+                // Hide preview box & reload invoices list
+                document.getElementById('preview-results-box').classList.add('d-none');
+                loadInvoices();
+
+                // If single invoice, offer to open it
+                if (res.created && res.created.length === 1) {
+                    openInvoiceModal(res.created[0].id);
+                }
+
+            } catch (err) {
+                console.error('Invoice generation failed:', err);
+                ui.toast(err.message || 'Failed to generate invoice(s).', 'danger');
+            } finally {
+                ui.setLoading(btn, false);
+            }
+        }
+
+        // =============================================================
+        // INVOICES LIST & FILTER LOGIC
+        // =============================================================
+        async function loadInvoices() {
+            const activeStatusBtn = document.querySelector('.filter-pill-group button.active');
+            const statusFilter = activeStatusBtn ? activeStatusBtn.dataset.status : 'all';
+            const monthFilter = document.getElementById('filter-month').value;
+            const yearFilter = document.getElementById('filter-year').value;
+
+            const params = new URLSearchParams();
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+            if (monthFilter) params.append('month', monthFilter);
+            if (yearFilter) params.append('year', yearFilter);
+
+            try {
+                const res = await api.get(`api/invoices.php?${params.toString()}`);
+                allInvoices = res.invoices || [];
+
+                // Summary chips: ledger total pending is the single source of truth
+                document.getElementById('stat-inv-count').textContent = res.summary?.total_count || 0;
+                document.getElementById('stat-inv-billed').textContent = ui.formatCurrency(res.summary?.total_payable || 0);
+                document.getElementById('stat-inv-paid').textContent = ui.formatCurrency(res.summary?.total_paid || 0);
+                document.getElementById('stat-inv-pending').textContent = ui.formatCurrency(res.summary?.total_ledger_pending ?? res.summary?.total_pending ?? 0);
+
+                renderInvoices();
+            } catch (err) {
+                console.error('Failed to load invoices:', err);
+            }
+        }
+
+        function renderInvoices() {
+            const tbody = document.getElementById('invoice-table-body');
+            const cardsContainer = document.getElementById('invoice-cards-body');
+            const searchQuery = document.getElementById('inv-search-input').value.trim().toLowerCase();
+
+            let list = allInvoices;
+            if (searchQuery) {
+                list = list.filter(i => 
+                    (i.invoice_no && i.invoice_no.toLowerCase().includes(searchQuery)) ||
+                    (i.customer_name && i.customer_name.toLowerCase().includes(searchQuery)) ||
+                    (i.customer_mobile && i.customer_mobile.includes(searchQuery))
+                );
+            }
+
+            if (list.length === 0) {
+                const emptyHtml = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-receipt fs-1 text-secondary opacity-50 mb-2 d-block"></i>
+                        <h5>No invoices found</h5>
+                        <p class="small text-muted mb-0">Adjust your search/filters or generate new bills above.</p>
+                    </div>
+                `;
+                tbody.innerHTML = `<tr><td colspan="9">${emptyHtml}</td></tr>`;
+                cardsContainer.innerHTML = emptyHtml;
+                return;
+            }
+
+            // Desktop Table
+            let tableHtml = '';
+            list.forEach(i => {
+                const statusBadge = getStatusBadge(i.status, i.carried_forward_to);
+                const prevBalText = i.previous_balance !== 0 
+                    ? `<span class="${i.previous_balance > 0 ? 'text-danger' : 'text-success'}">${i.previous_balance > 0 ? '+' : ''}${ui.formatCurrency(i.previous_balance)}</span>`
+                    : '<span class="text-muted">₹0.00</span>';
+
+                tableHtml += `
+                    <tr>
+                        <td>
+                            <a href="javascript:void(0)" onclick="openInvoiceModal(${i.id})" class="fw-bold text-decoration-none font-monospace text-primary">
+                                ${ui.escapeHtml(i.invoice_no)}
+                            </a>
+                            <div class="small text-muted" style="font-size: 0.75rem;">${ui.formatDate(i.generated_at.split(' ')[0])}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">${ui.escapeHtml(i.customer_name)}</div>
+                            <div class="small text-muted">${ui.escapeHtml(i.customer_mobile)}</div>
+                        </td>
+                        <td>
+                            <span class="fw-semibold text-secondary">${ui.escapeHtml(i.period_label)}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="fw-bold text-dark font-monospace">${i.total_qty.toFixed(2)} L</span>
+                            <div class="small text-muted">${i.days_delivered} days</div>
+                        </td>
+                        <td class="text-end font-monospace">${ui.formatCurrency(i.milk_amount)}</td>
+                        <td class="text-end font-monospace small">${prevBalText}</td>
+                        <td class="text-end font-monospace fw-bold fs-6 text-primary">${ui.formatCurrency(i.total_payable)}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-primary" onclick="openInvoiceModal(${i.id})" title="View & Print">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="sendWhatsAppDirect(${i.id})" title="Send on WhatsApp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmVoidInvoice(${i.id})" title="Void Invoice">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = tableHtml;
+
+            // Mobile Cards
+            let cardsHtml = '';
+            list.forEach(i => {
+                const statusBadge = getStatusBadge(i.status, i.carried_forward_to);
+
+                cardsHtml += `
+                    <div class="card-milk p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <a href="javascript:void(0)" onclick="openInvoiceModal(${i.id})" class="fw-bold text-decoration-none text-primary fs-6 font-monospace">
+                                    ${ui.escapeHtml(i.invoice_no)}
+                                </a>
+                                <div class="fw-bold text-dark mt-1">${ui.escapeHtml(i.customer_name)}</div>
+                            </div>
+                            <div>${statusBadge}</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted py-2 border-top border-bottom my-2">
+                            <div><i class="bi bi-calendar-event me-1"></i>${ui.escapeHtml(i.period_label)}</div>
+                            <div><strong>${i.total_qty.toFixed(2)} L</strong> (${i.days_delivered} days)</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="small text-muted">Total Payable:</div>
+                            <div class="fs-5 fw-bold text-primary font-monospace">${ui.formatCurrency(i.total_payable)}</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="openInvoiceModal(${i.id})">
+                                <i class="bi bi-printer me-1"></i> View / Print
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success flex-fill" onclick="sendWhatsAppDirect(${i.id})">
+                                <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger px-2" onclick="confirmVoidInvoice(${i.id})">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            cardsContainer.innerHTML = cardsHtml;
+        }
+
+        function getStatusBadge(status, carriedForwardTo = null) {
+            if (carriedForwardTo) {
+                return `<span class="badge bg-secondary text-white py-1 px-2" title="Shortfall carried to ${carriedForwardTo}"><i class="bi bi-arrow-right-circle me-1"></i>Carried forward to ${carriedForwardTo}</span>`;
+            }
+            const map = {
+                unpaid: `<span class="invoice-status-badge status-unpaid"><i class="bi bi-x-circle"></i> Unpaid</span>`,
+                partial: `<span class="invoice-status-badge status-partial"><i class="bi bi-pie-chart"></i> Partial</span>`,
+                paid: `<span class="invoice-status-badge status-paid"><i class="bi bi-check-circle"></i> Paid</span>`,
+                overpaid: `<span class="invoice-status-badge status-overpaid"><i class="bi bi-plus-circle"></i> Overpaid</span>`
+            };
+            return map[status] || `<span class="badge bg-secondary">${status}</span>`;
+        }
+
+        // =============================================================
+        // INVOICE VIEW MODAL & PRINT LOGIC
+        // =============================================================
+        async function openInvoiceModal(id) {
+            try {
+                const res = await api.get(`api/invoices.php?id=${id}`);
+                currentInvoiceDetail = res;
+                renderInvoiceModal(res);
+                invoiceViewModal.show();
+            } catch (err) {
+                console.error('Failed to load invoice details:', err);
+            }
+        }
+
+        function renderInvoiceModal(data) {
+            const { invoice, business } = data;
+
+            // Business Info
+            document.getElementById('inv-biz-name').textContent = business.business_name || 'Milk Dairy';
+            document.getElementById('inv-biz-address').textContent = business.business_address || '';
+            document.getElementById('inv-biz-phone').textContent = business.business_phone || '';
+            document.getElementById('inv-upi-id').value = business.upi_id || '';
+            document.getElementById('inv-detail-footer').textContent = business.invoice_footer || 'Thank you for choosing fresh & pure milk! Please clear dues before the 5th.';
+
+            // Invoice Meta
+            document.getElementById('inv-detail-no').textContent = invoice.invoice_no;
+            const invDateFormatted = ui.formatDate(invoice.generated_at.split(' ')[0]);
+            document.getElementById('inv-detail-date').textContent = invDateFormatted;
+            const invDateSub = document.getElementById('inv-detail-date-sub');
+            if (invDateSub) invDateSub.textContent = invDateFormatted;
+
+            // Billing Period & Date Range formatting without duplication
+            document.getElementById('inv-detail-period').textContent = invoice.period_label;
+            const dateRangeEl = document.getElementById('inv-detail-date-range');
+            const startFormatted = ui.formatDate(invoice.period_from);
+            const endFormatted = ui.formatDate(invoice.period_to);
+
+            // Compute total days in period
+            const d1 = new Date(invoice.period_from + 'T00:00:00');
+            const d2 = new Date(invoice.period_to + 'T00:00:00');
+            const dayCount = Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+
+            if (invoice.period_type === 'custom' || (invoice.period_label && (invoice.period_label.includes('-') || invoice.period_label.includes('–')))) {
+                dateRangeEl.textContent = `${dayCount} Days Delivery Cycle`;
+            } else {
+                dateRangeEl.textContent = `${startFormatted} — ${endFormatted}`;
+            }
+
+            // Status Badge
+            const statusEl = document.getElementById('inv-detail-status');
+            statusEl.className = `invoice-status-badge status-${invoice.status}`;
+            statusEl.innerHTML = `<i class="bi bi-check-circle"></i> ${invoice.status.toUpperCase()}`;
+
+            // Customer Info
+            document.getElementById('inv-cust-name').textContent = invoice.customer_name;
+            document.getElementById('inv-cust-address').textContent = invoice.customer_address || '-';
+            document.getElementById('inv-cust-mobile').textContent = invoice.customer_mobile;
+
+            // Day-wise Delivery Matrix for the billed period
+            const gridContainer = document.getElementById('inv-day-grid');
+            let gridHtml = '';
+            let deliveredDaysCount = 0;
+            let totalLitresLogged = 0;
+
+            const start = new Date(invoice.period_from + 'T00:00:00');
+            const end = new Date(invoice.period_to + 'T00:00:00');
+            const pad = n => String(n).padStart(2, '0');
+            const toYMD = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+            for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+                const dateStr = toYMD(dt);
+                const dayNum = dt.getDate();
+                const entry = (invoice.daily_breakdown && (invoice.daily_breakdown[dateStr] || invoice.daily_breakdown[dayNum])) || null;
+
+                if (entry) {
+                    const qty = parseFloat(entry.quantity) || 0;
+                    if (qty > 0) {
+                        deliveredDaysCount++;
+                        totalLitresLogged += qty;
+                        gridHtml += `
+                            <div class="invoice-day-cell active-delivery" title="${dateStr}: ${qty} L">
+                                <span class="day-num">${dayNum}</span>
+                                <span class="day-qty">${qty} L</span>
+                            </div>
+                        `;
+                    } else {
+                        gridHtml += `
+                            <div class="invoice-day-cell skipped-cell" title="${dateStr}: Skipped (0 L)">
+                                <span class="day-num">${dayNum}</span>
+                                <span class="day-qty text-muted">—</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    gridHtml += `
+                        <div class="invoice-day-cell unrecorded-cell" title="${dateStr}: No delivery recorded">
+                            <span class="day-num">${dayNum}</span>
+                            <span class="day-qty text-muted">—</span>
+                        </div>
+                    `;
+                }
+            }
+            gridContainer.innerHTML = gridHtml;
+
+            // Update delivery log meta
+            const gridMetaEl = document.getElementById('inv-day-grid-meta');
+            if (gridMetaEl) {
+                gridMetaEl.textContent = `${deliveredDaysCount} Days Delivered • ${totalLitresLogged.toFixed(1)} L Total`;
+            }
+
+            // Line items
+            const itemsTbody = document.getElementById('inv-line-items-body');
+            let itemsHtml = '';
+            if (invoice.line_items && invoice.line_items.length > 0) {
+                invoice.line_items.forEach(item => {
+                    itemsHtml += `
+                        <tr>
+                            <td class="text-dark fw-medium" style="padding: 0.65rem 0.85rem;">Fresh Pure Milk (${item.days} days @ ₹${item.rate.toFixed(2)}/L)</td>
+                            <td class="text-center font-monospace" style="padding: 0.65rem 0.5rem;">${item.days}</td>
+                            <td class="text-center font-monospace fw-semibold" style="padding: 0.65rem 0.5rem;">${item.quantity.toFixed(2)} L</td>
+                            <td class="text-end font-monospace" style="padding: 0.65rem 0.5rem;">₹${item.rate.toFixed(2)}</td>
+                            <td class="text-end font-monospace fw-bold text-dark" style="padding: 0.65rem 0.85rem;">₹${item.amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                itemsHtml = `<tr><td colspan="5" class="text-center text-muted py-3">No milk deliveries billed for this period.</td></tr>`;
+            }
+            itemsTbody.innerHTML = itemsHtml;
+
+            // Financial Summary
+            document.getElementById('inv-sum-milk').textContent = ui.formatCurrency(invoice.milk_amount);
+
+            const prevBal = parseFloat(invoice.previous_balance) || 0;
+            const prevLabel = document.getElementById('inv-sum-prev-label');
+            const prevVal = document.getElementById('inv-sum-prev');
+
+            if (prevBal > 0) {
+                prevLabel.textContent = 'Previous Dues (+):';
+                prevVal.textContent = `+ ${ui.formatCurrency(prevBal)}`;
+                prevVal.className = 'text-danger font-monospace';
+            } else if (prevBal < 0) {
+                prevLabel.textContent = 'Advance Credit (-):';
+                prevVal.textContent = `- ${ui.formatCurrency(Math.abs(prevBal))}`;
+                prevVal.className = 'text-success font-monospace';
+            } else {
+                prevLabel.textContent = 'Previous Balance:';
+                prevVal.textContent = '₹0.00';
+                prevVal.className = 'text-muted font-monospace';
+            }
+
+            document.getElementById('inv-sum-payable').textContent = ui.formatCurrency(invoice.total_payable);
+            document.getElementById('inv-sum-paid').textContent = ui.formatCurrency(invoice.paid_amount);
+
+            const dueVal = parseFloat(invoice.balance_due) || 0;
+            const dueEl = document.getElementById('inv-sum-due');
+            const dueLabel = document.getElementById('inv-sum-due-label');
+            dueEl.textContent = ui.formatCurrency(dueVal);
+            if (dueVal <= 0) {
+                dueEl.className = 'text-success font-monospace';
+                if (dueLabel) dueLabel.innerHTML = 'Balance Due: <span class="badge bg-success-subtle text-success fs-7 ms-1 fw-normal">Cleared</span>';
+            } else {
+                dueEl.className = 'text-danger font-monospace';
+                if (dueLabel) dueLabel.innerHTML = 'Balance Due:';
+            }
+
+            // UPI QR Code and payment details
+            const upiId = business.upi_id || '';
+            const upiPayable = (dueVal > 0 ? dueVal : invoice.total_payable) || 0;
+            document.getElementById('inv-upi-id').value = upiId || 'Not configured';
+            const upiAmountEl = document.getElementById('inv-upi-amount');
+            if (upiAmountEl) upiAmountEl.textContent = ui.formatCurrency(upiPayable);
+
+            const qrImg = document.getElementById('inv-upi-qr');
+            const qrFallback = document.getElementById('inv-upi-qr-fallback');
+            if (qrImg) {
+                if (upiId && upiPayable > 0) {
+                    const bizName = encodeURIComponent(business.business_name || 'Milk Dairy');
+                    const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${bizName}&am=${upiPayable.toFixed(2)}&cu=INR&tn=${encodeURIComponent('Milk Bill ' + invoice.invoice_no)}`;
+                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=${encodeURIComponent(upiUri)}`;
+                    qrImg.style.display = 'block';
+                    if (qrFallback) qrFallback.style.display = 'none';
+                } else {
+                    qrImg.style.display = 'none';
+                    if (qrFallback) qrFallback.style.display = 'flex';
+                }
+            }
+        }
+
+        // =============================================================
+        // WHATSAPP BILLING LOGIC
+        // =============================================================
+        function sendWhatsAppInvoice(data) {
+            const { invoice, business } = data;
+            const mobile = invoice.customer_mobile;
+            if (!mobile) {
+                ui.toast('Customer mobile number is missing.', 'warning');
+                return;
+            }
+
+            const cleanMobile = mobile.replace(/\D/g, '').slice(-10);
+
+            let msg = `*${business.business_name || 'Milk Dairy'} - Milk Bill* 🥛\n`;
+            msg += `--------------------------------\n`;
+            msg += `👤 *Customer:* ${invoice.customer_name}\n`;
+            msg += `🧾 *Invoice No:* ${invoice.invoice_no}\n`;
+            msg += `📅 *Period:* ${invoice.period_label}\n`;
+            msg += `🥛 *Delivered:* ${invoice.total_qty.toFixed(2)} Litres (${invoice.days_delivered} days)\n`;
+            msg += `💰 *Milk Charges:* ₹${invoice.milk_amount.toFixed(2)}\n`;
+
+            if (invoice.previous_balance > 0) {
+                msg += `⏳ *Previous Dues:* +₹${invoice.previous_balance.toFixed(2)}\n`;
+            } else if (invoice.previous_balance < 0) {
+                msg += `🎁 *Advance Credit:* -₹${Math.abs(invoice.previous_balance).toFixed(2)}\n`;
+            }
+
+            msg += `--------------------------------\n`;
+            msg += `💵 *Total Payable: ₹${invoice.total_payable.toFixed(2)}*\n`;
+            if (invoice.paid_amount > 0) {
+                msg += `✅ *Paid:* ₹${invoice.paid_amount.toFixed(2)}\n`;
+                msg += `⚠️ *Balance Due:* ₹${invoice.balance_due.toFixed(2)}\n`;
+            }
+            msg += `--------------------------------\n`;
+            if (business.upi_id) {
+                msg += `📲 *Pay via UPI:* ${business.upi_id}\n`;
+            }
+            if (business.invoice_footer) {
+                msg += `_${business.invoice_footer}_\n`;
+            }
+
+            const url = `https://wa.me/91${cleanMobile}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        async function sendWhatsAppDirect(id) {
+            try {
+                const res = await api.get(`api/invoices.php?id=${id}`);
+                sendWhatsAppInvoice(res);
+            } catch (err) {
+                console.error('WhatsApp failed:', err);
+            }
+        }
+
+        // =============================================================
+        // VOID INVOICE LOGIC
+        // =============================================================
+        async function confirmVoidInvoice(id, invoiceNo = null, customerName = null) {
+            const inv = allInvoices.find(x => x.id === id);
+            const num = inv?.invoice_no || invoiceNo || `#${id}`;
+            const name = inv?.customer_name || customerName || 'Customer';
+
+            const confirmed = await ui.confirm({
+                title: 'Void Invoice',
+                message: `Are you sure you want to void invoice ${num} for ${name}? This will unlock all deliveries for that month and reverse the ledger balance.`,
+                confirmText: 'Void Invoice',
+                confirmClass: 'btn-danger'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                const res = await api.delete(`api/invoices.php?id=${id}`);
+                ui.toast(res.message || 'Invoice voided successfully.', 'info');
+                loadInvoices();
+            } catch (err) {
+                console.error('Failed to void invoice:', err);
+            }
+        }
+    </script>
+</body>
+</html>

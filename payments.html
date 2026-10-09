@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - MilkBook</title>
+    <meta name="description" content="Collect customer payments, manage ledger credits, write-offs, and track collection history.">
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.1">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a></li>
+                    <li class="nav-item"><a class="nav-link" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-cash-coin text-primary"></i> Payments & Collections</h1>
+                        <p class="page-subtitle">Record cash & UPI collections, track live ledger balances, and print customer statements</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-md-4 mb-5">
+            <!-- Row: Payment Form (Left/Top) & Quick Stats (Right/Top) -->
+            <div class="row g-4 mb-4">
+                <!-- Collect Payment Card -->
+                <div class="col-12 col-lg-7">
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                            <h2 class="h5 fw-bold mb-0 text-primary"><i class="bi bi-plus-circle me-1"></i> Collect Payment</h2>
+                            <span class="badge bg-light text-secondary border">Single Ledger Entry</span>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <!-- Post-Payment Result Banner (Hidden by default) -->
+                            <div id="payment-result-banner" class="alert alert-success d-none mb-3 p-3" role="alert">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <i class="bi bi-check-circle-fill fs-5 text-success mt-1"></i>
+                                        <div>
+                                            <h6 class="alert-heading fw-bold mb-1" id="payment-result-title">Payment Recorded Successfully!</h6>
+                                            <p class="mb-0 small" id="payment-result-text"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-close btn-sm" id="btn-close-result-banner" aria-label="Close"></button>
+                                </div>
+                                <div id="writeoff-shortcut-container" class="mt-2 pt-2 border-top border-success-subtle d-none">
+                                    <button type="button" class="btn btn-warning btn-sm fw-semibold" id="btn-shortcut-writeoff">
+                                        <i class="bi bi-scissors me-1"></i> <span id="writeoff-shortcut-label">Write off remaining dues</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <form id="form-collect-payment">
+                                <!-- Customer Select -->
+                                <div class="mb-3">
+                                    <label for="pay-customer-id" class="form-label small fw-semibold text-secondary">Select Customer <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="pay-customer-id" required>
+                                        <option value="">-- Choose a Customer --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Customer Balance & Latest Invoice Info Card -->
+                                <div id="customer-info-box" class="p-3 mb-3 bg-light rounded-3 d-none border">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-12 col-sm-6">
+                                            <span class="text-muted small d-block">Current Ledger Balance</span>
+                                            <div id="cust-balance-badge" class="mt-1"></div>
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <span class="text-muted small d-block">Latest Invoice</span>
+                                            <div id="cust-invoice-info" class="small fw-semibold mt-1 text-secondary">No invoices yet</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Amount & Date Row -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-sm-6">
+                                        <label for="pay-amount" class="form-label small fw-semibold text-secondary">Payment Amount (₹) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light fw-bold">₹</span>
+                                            <input type="number" step="0.01" min="0.01" class="form-control fw-bold fs-5" id="pay-amount" placeholder="0.00" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="pay-date" class="form-label small fw-semibold text-secondary">Payment Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="pay-date" required>
+                                    </div>
+                                </div>
+
+                                <!-- Live Hint Box -->
+                                <div id="pay-live-hint" class="payment-hint-box d-none mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        <span id="pay-live-hint-text">Enter an amount to see balance preview</span>
+                                    </div>
+                                </div>
+
+                                <!-- Mode & Reference -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-sm-6">
+                                        <label class="form-label small fw-semibold text-secondary">Payment Mode</label>
+                                        <div class="d-flex gap-2">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="pay-mode" id="mode-cash" value="cash" checked>
+                                                <label class="form-check-label small" for="mode-cash"><i class="bi bi-cash text-success"></i> Cash</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="pay-mode" id="mode-upi" value="upi">
+                                                <label class="form-check-label small" for="mode-upi"><i class="bi bi-qr-code text-primary"></i> UPI</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="pay-mode" id="mode-bank" value="bank">
+                                                <label class="form-check-label small" for="mode-bank"><i class="bi bi-bank text-info"></i> Bank</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="pay-mode" id="mode-other" value="other">
+                                                <label class="form-check-label small" for="mode-other">Other</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="pay-reference" class="form-label small fw-semibold text-secondary">Reference # (Optional)</label>
+                                        <input type="text" class="form-control" id="pay-reference" placeholder="UPI Ref, Cheque #, etc.">
+                                    </div>
+                                </div>
+
+                                <!-- Note -->
+                                <div class="mb-4">
+                                    <label for="pay-note" class="form-label small fw-semibold text-secondary">Note / Remarks (Optional)</label>
+                                    <input type="text" class="form-control" id="pay-note" placeholder="e.g. Paid in morning delivery">
+                                </div>
+
+                                <button type="submit" class="btn btn-milk-primary w-100 py-2 fw-semibold" id="btn-submit-payment">
+                                    <i class="bi bi-check-lg me-1"></i> Save Payment & Update Ledger
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ledger Quick Overview Card -->
+                <div class="col-12 col-lg-5">
+                    <div class="card border-0 shadow-sm mb-3" style="border-radius: var(--mb-radius-md);">
+                        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+                            <h2 class="h5 fw-bold mb-0 text-secondary"><i class="bi bi-pie-chart me-1"></i> Ledger Overview</h2>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <div class="row g-3 text-center">
+                                <div class="col-6">
+                                    <div class="p-3 bg-danger bg-opacity-10 rounded-3 border border-danger-subtle">
+                                        <div class="text-danger small fw-semibold mb-1">Total Pending Dues</div>
+                                        <h3 class="h4 fw-bold text-danger mb-0" id="stat-pending-dues">₹0.00</h3>
+                                        <small class="text-muted">Uncollected</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-success bg-opacity-10 rounded-3 border border-success-subtle">
+                                        <div class="text-success small fw-semibold mb-1">Total Advance Held</div>
+                                        <h3 class="h4 fw-bold text-success mb-0" id="stat-advance-held">₹0.00</h3>
+                                        <small class="text-muted">Prepaid Credit</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-3 bg-light rounded-3 text-muted small">
+                                <i class="bi bi-shield-check text-primary me-1"></i>
+                                <strong>Single Source of Truth:</strong> Customer balances are strictly calculated as <code>SUM(debit) - SUM(credit)</code> from the ledger. Overpayments automatically become advance credit for future bills.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Adjustments Trigger Card -->
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                            <h2 class="h5 fw-bold mb-0 text-secondary"><i class="bi bi-sliders me-1"></i> Special Adjustments</h2>
+                            <button class="btn btn-outline-secondary btn-sm" id="btn-open-adjustment-modal">
+                                <i class="bi bi-plus-lg me-1"></i> New Adjustment
+                            </button>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <p class="text-muted small mb-0">
+                                Need to write off bad debt, offer a courtesy discount, or issue a cash refund for advance credit? Record an auditable adjustment entry in the ledger.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History Table Card -->
+            <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <h2 class="h5 fw-bold mb-0 text-primary"><i class="bi bi-clock-history me-1"></i> Payment History</h2>
+                        <!-- Filters -->
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <select class="form-select form-select-sm" id="filter-customer" style="min-width: 150px;">
+                                <option value="all">All Customers</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="filter-mode" style="width: 110px;">
+                                <option value="all">All Modes</option>
+                                <option value="cash">Cash</option>
+                                <option value="upi">UPI</option>
+                                <option value="bank">Bank</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="date" class="form-control form-control-sm" id="filter-from-date" title="From Date" style="width: 130px;">
+                            <input type="date" class="form-control form-control-sm" id="filter-to-date" title="To Date" style="width: 130px;">
+                            <button class="btn btn-light btn-sm border" id="btn-reset-filters" title="Reset Filters">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="table-payments">
+                            <thead class="table-light small text-secondary">
+                                <tr>
+                                    <th class="ps-3">Date</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Reference & Notes</th>
+                                    <th>Linked Invoice</th>
+                                    <th class="text-end pe-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Loading payment records...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-top py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                    <span class="small text-muted" id="payments-count-label">Showing 0 payments</span>
+                    <span class="fw-bold small" id="payments-total-label">Total: ₹0.00</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Adjustment Modal -->
+    <div class="modal fade" id="modal-adjustment" tabindex="-1" aria-labelledby="modalAdjustmentTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="modalAdjustmentTitle"><i class="bi bi-sliders me-1"></i> Record Adjustment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-adjustment">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="adj-customer-id" class="form-label small fw-semibold">Customer <span class="text-danger">*</span></label>
+                            <select class="form-select" id="adj-customer-id" required>
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="adj-type" class="form-label small fw-semibold">Adjustment Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="adj-type" required>
+                                <option value="writeoff">Write-off (Reduces customer dues)</option>
+                                <option value="discount">Discount (Reduces customer dues)</option>
+                                <option value="refund">Refund (Returns advance credit to customer)</option>
+                                <option value="manual">Manual Adjustment</option>
+                            </select>
+                            <div class="form-text small" id="adj-type-hint">Write-off records a ledger credit to forgive unpaid balances.</div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label for="adj-amount" class="form-label small fw-semibold">Amount (₹) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" min="0.01" class="form-control" id="adj-amount" required placeholder="0.00">
+                            </div>
+                            <div class="col-6">
+                                <label for="adj-date" class="form-label small fw-semibold">Entry Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="adj-date" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="adj-reason" class="form-label small fw-semibold">Reason (Required for audit) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="adj-reason" required placeholder="e.g. Rounding waiver, customer moved away, cash refund">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3" id="btn-save-adjustment">
+                            <i class="bi bi-save me-1"></i> Save Adjustment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Statement Modal (Printable) -->
+    <div class="modal fade" id="modal-statement" tabindex="-1" aria-labelledby="modalStatementTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light py-2 px-3 no-print">
+                    <h5 class="modal-title fw-bold text-primary" id="modalStatementTitle"><i class="bi bi-journal-text me-1"></i> Customer Ledger Statement</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm px-3" onclick="window.print()">
+                            <i class="bi bi-printer me-1"></i> Print Statement
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <!-- Filters in modal (no-print) -->
+                    <div class="p-3 mb-3 bg-light rounded-3 no-print border">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-12 col-md-4">
+                                <label for="stmt-customer-select" class="form-label small fw-semibold text-secondary mb-1">Customer</label>
+                                <select class="form-select form-select-sm" id="stmt-customer-select">
+                                    <option value="">-- Choose Customer --</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label for="stmt-from-date" class="form-label small fw-semibold text-secondary mb-1">From Date</label>
+                                <input type="date" class="form-control form-control-sm" id="stmt-from-date">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label for="stmt-to-date" class="form-label small fw-semibold text-secondary mb-1">To Date</label>
+                                <input type="date" class="form-control form-control-sm" id="stmt-to-date">
+                            </div>
+                            <div class="col-12 col-md-2 d-flex align-items-end">
+                                <button class="btn btn-milk-primary btn-sm w-100" id="btn-load-statement">
+                                    <i class="bi bi-search me-1"></i> View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Printable Statement Container -->
+                    <div id="statement-print-area" class="statement-paper">
+                        <div id="statement-content">
+                            <div class="text-center py-5 text-muted">Select a customer above to view ledger statement</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="modal-delete-confirm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-exclamation-triangle text-danger display-4 mb-3 d-block"></i>
+                    <h5 class="fw-bold mb-2">Reverse Payment?</h5>
+                    <p class="text-muted small mb-3">This will reverse the ledger credit and recalculate the customer's invoice status.</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger btn-sm px-3" id="btn-confirm-delete-payment">Delete & Reverse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Mobile Nav -->
+    <nav class="mobile-nav-strip d-md-none">
+        <a href="index.html" class="mobile-nav-item"><i class="bi bi-speedometer2"></i><span>Home</span></a>
+        <a href="deliveries.html" class="mobile-nav-item"><i class="bi bi-truck"></i><span>Deliveries</span></a>
+        <a href="invoices.html" class="mobile-nav-item"><i class="bi bi-receipt"></i><span>Invoices</span></a>
+        <a href="payments.html" class="mobile-nav-item active"><i class="bi bi-cash-coin"></i><span>Payments</span></a>
+        <a href="customers.html" class="mobile-nav-item"><i class="bi bi-people-fill"></i><span>Customers</span></a>
+        <a href="settings.html" class="mobile-nav-item"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
+    </nav>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Payments Controller Script -->
+    <script>
+    let customersList = [];
+    let customerMap = {};
+    let activeCustomerBalance = 0;
+    let paymentToDeleteId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await api.initAuth();
+
+        // Default dates
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pay-date').value = today;
+        document.getElementById('adj-date').value = today;
+        document.getElementById('filter-to-date').value = today;
+
+        // Start from beginning of current year for statements
+        const curYear = new Date().getFullYear();
+        const curMonth = new Date().getMonth();
+        const endOfMonth = new Date(curYear, curMonth + 1, 0).toISOString().split('T')[0];
+        document.getElementById('stmt-from-date').value = `${curYear}-01-01`;
+        document.getElementById('stmt-to-date').value = endOfMonth;
+
+        // Check if customer_id passed in URL (e.g. from customer list or dashboard)
+        const urlParams = new URLSearchParams(window.location.search);
+        const preselectedCustId = urlParams.get('customer_id');
+
+        await loadCustomers(preselectedCustId);
+        await loadLedgerTotals();
+        await loadPayments();
+
+        // Setup Event Listeners
+        setupEventListeners();
+    });
+
+    // 1. Load Customers with Live Ledger Balances
+    async function loadCustomers(preselectId = null) {
+        try {
+            const data = await api.get('api/balances.php?all=0');
+            customersList = data.customers || [];
+            customerMap = {};
+
+            const selectCollect = document.getElementById('pay-customer-id');
+            const selectFilter = document.getElementById('filter-customer');
+            const selectAdj = document.getElementById('adj-customer-id');
+            const selectStmt = document.getElementById('stmt-customer-select');
+
+            selectCollect.innerHTML = '<option value="">-- Choose a Customer --</option>';
+            selectFilter.innerHTML = '<option value="all">All Customers</option>';
+            selectAdj.innerHTML = '<option value="">-- Select Customer --</option>';
+            selectStmt.innerHTML = '<option value="">-- Choose Customer --</option>';
+
+            customersList.forEach(c => {
+                customerMap[c.id] = c;
+                const bal = parseFloat(c.balance);
+                let balLabel = '';
+                if (bal > 0) balLabel = ` (Due: ₹${bal.toFixed(2)})`;
+                else if (bal < 0) balLabel = ` (Advance: ₹${Math.abs(bal).toFixed(2)})`;
+
+                const opt1 = new Option(`${c.name}${balLabel}`, c.id);
+                const opt2 = new Option(`${c.name}`, c.id);
+                const opt3 = new Option(`${c.name}${balLabel}`, c.id);
+                const opt4 = new Option(`${c.name}`, c.id);
+
+                selectCollect.add(opt1);
+                selectFilter.add(opt2);
+                selectAdj.add(opt3);
+                selectStmt.add(opt4);
+            });
+
+            if (preselectId && customerMap[preselectId]) {
+                selectCollect.value = preselectId;
+                onCustomerSelected(preselectId);
+                // Also trigger statement if asked
+                if (window.location.hash === '#statement') {
+                    selectStmt.value = preselectId;
+                    loadCustomerStatement(preselectId);
+                    const stmtModal = new bootstrap.Modal(document.getElementById('modal-statement'));
+                    stmtModal.show();
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load customer balances', e);
+        }
+    }
+
+    // 2. Load Ledger Totals
+    async function loadLedgerTotals() {
+        try {
+            const data = await api.get('api/balances.php');
+            document.getElementById('stat-pending-dues').textContent = `₹${parseFloat(data.total_pending_dues || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('stat-advance-held').textContent = `₹${parseFloat(data.total_advance_held || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        } catch (e) {
+            console.error('Failed to load ledger totals', e);
+        }
+    }
+
+    // 3. Customer Selection in Collect Payment Form
+    function onCustomerSelected(cid) {
+        const infoBox = document.getElementById('customer-info-box');
+        const balBadge = document.getElementById('cust-balance-badge');
+        const invInfo = document.getElementById('cust-invoice-info');
+        const amountInput = document.getElementById('pay-amount');
+
+        if (!cid || !customerMap[cid]) {
+            infoBox.classList.add('d-none');
+            activeCustomerBalance = 0;
+            updateLiveHint();
+            return;
+        }
+
+        const cust = customerMap[cid];
+        activeCustomerBalance = parseFloat(cust.balance);
+        infoBox.classList.remove('d-none');
+
+        // Balance badge
+        if (activeCustomerBalance > 0) {
+            balBadge.innerHTML = `<span class="badge bg-danger fs-6 px-3 py-1">Pending Due: ₹${activeCustomerBalance.toFixed(2)}</span>`;
+            amountInput.value = activeCustomerBalance.toFixed(2);
+        } else if (activeCustomerBalance < 0) {
+            balBadge.innerHTML = `<span class="badge bg-success fs-6 px-3 py-1">Advance Credit: ₹${Math.abs(activeCustomerBalance).toFixed(2)}</span>`;
+            amountInput.value = '';
+        } else {
+            balBadge.innerHTML = `<span class="badge bg-secondary fs-6 px-3 py-1">All Clear (₹0.00)</span>`;
+            amountInput.value = '';
+        }
+
+        // Latest Invoice Info
+        if (cust.latest_invoice) {
+            const inv = cust.latest_invoice;
+            invInfo.innerHTML = `<strong>#${inv.invoice_no}</strong> (Payable: ₹${parseFloat(inv.total_payable).toFixed(2)}, Paid: ₹${parseFloat(inv.paid_amount).toFixed(2)})`;
+        } else {
+            invInfo.textContent = 'No previous invoice';
+        }
+
+        updateLiveHint();
+    }
+
+    // 4. Live Calculation Hint
+    function updateLiveHint() {
+        const hintBox = document.getElementById('pay-live-hint');
+        const hintText = document.getElementById('pay-live-hint-text');
+        const amountVal = parseFloat(document.getElementById('pay-amount').value) || 0;
+
+        if (!document.getElementById('pay-customer-id').value || amountVal <= 0) {
+            hintBox.classList.add('d-none');
+            return;
+        }
+
+        hintBox.classList.remove('d-none', 'hint-pending', 'hint-advance');
+
+        const remainingBalance = activeCustomerBalance - amountVal;
+
+        if (remainingBalance > 0) {
+            // Underpaid: shortfall remains
+            hintBox.classList.add('hint-pending');
+            hintText.innerHTML = `<i class="bi bi-clock-history me-1"></i> <strong>₹${remainingBalance.toFixed(2)}</strong> will remain pending (carried to next bill)`;
+        } else if (remainingBalance < 0) {
+            // Overpaid: extra kept as advance
+            hintBox.classList.add('hint-advance');
+            hintText.innerHTML = `<i class="bi bi-arrow-up-right-circle me-1"></i> <strong>₹${Math.abs(remainingBalance).toFixed(2)}</strong> will be kept as advance and adjusted in the next bill`;
+        } else {
+            // Exact payment
+            hintText.innerHTML = `<i class="bi bi-check2-circle me-1 text-success"></i> <strong>All dues will be cleared!</strong> Customer balance will become ₹0.00`;
+        }
+    }
+
+    // 5. Load Payments History List
+    async function loadPayments() {
+        const tbody = document.getElementById('payments-tbody');
+        const countLabel = document.getElementById('payments-count-label');
+        const totalLabel = document.getElementById('payments-total-label');
+
+        const cid = document.getElementById('filter-customer').value;
+        const mode = document.getElementById('filter-mode').value;
+        const fromDate = document.getElementById('filter-from-date').value;
+        const toDate = document.getElementById('filter-to-date').value;
+
+        const params = new URLSearchParams();
+        if (cid && cid !== 'all') params.set('customer_id', cid);
+        if (mode && mode !== 'all') params.set('mode', mode);
+        if (fromDate) params.set('from_date', fromDate);
+        if (toDate) params.set('to_date', toDate);
+
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr>`;
+
+        try {
+            const res = await api.get(`api/payments.php?${params.toString()}`);
+            const payments = res.payments || [];
+
+            countLabel.textContent = `Showing ${payments.length} payment(s)`;
+            totalLabel.textContent = `Total: ₹${parseFloat(res.total_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+            if (payments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">No payments recorded matching the filters.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = payments.map(p => {
+                const modeIcons = {
+                    cash: '<span class="badge bg-success bg-opacity-10 text-success border border-success-subtle"><i class="bi bi-cash me-1"></i>Cash</span>',
+                    upi: '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle"><i class="bi bi-qr-code me-1"></i>UPI</span>',
+                    bank: '<span class="badge bg-info bg-opacity-10 text-info border border-info-subtle"><i class="bi bi-bank me-1"></i>Bank</span>',
+                    other: '<span class="badge bg-secondary bg-opacity-10 text-secondary">Other</span>'
+                };
+                const modeBadge = modeIcons[p.mode] || p.mode;
+
+                const refNote = [
+                    p.reference ? `<span class="badge bg-light text-dark border">Ref: ${escapeHtml(p.reference)}</span>` : '',
+                    p.note ? `<small class="text-muted d-block">${escapeHtml(p.note)}</small>` : ''
+                ].filter(Boolean).join(' ');
+
+                const invBadge = p.invoice_no 
+                    ? `<span class="badge bg-light text-primary border">#${p.invoice_no}</span>`
+                    : '<span class="text-muted small">Direct Credit</span>';
+
+                return `
+                    <tr>
+                        <td class="ps-3 fw-semibold text-secondary small">${p.payment_date}</td>
+                        <td>
+                            <span class="fw-bold">${escapeHtml(p.customer_name)}</span>
+                            <small class="text-muted d-block">${p.customer_mobile}</small>
+                        </td>
+                        <td class="fw-bold text-success fs-6">₹${parseFloat(p.amount).toFixed(2)}</td>
+                        <td>${modeBadge}</td>
+                        <td>${refNote || '<span class="text-muted small">—</span>'}</td>
+                        <td>${invBadge}</td>
+                        <td class="text-end pe-3">
+                            <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="confirmDeletePayment(${p.id})" title="Delete Payment">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+        } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load payments: ${e.message}</td></tr>`;
+        }
+    }
+
+    // 6. Delete Payment Confirmation
+    function confirmDeletePayment(id) {
+        paymentToDeleteId = id;
+        const modal = new bootstrap.Modal(document.getElementById('modal-delete-confirm'));
+        modal.show();
+    }
+
+    async function executeDeletePayment() {
+        if (!paymentToDeleteId) return;
+        try {
+            const res = await api.delete(`api/payments.php?id=${paymentToDeleteId}`);
+            ui.toast(res.message || 'Payment reversed successfully', 'success', 'Reversed');
+            bootstrap.Modal.getInstance(document.getElementById('modal-delete-confirm')).hide();
+            paymentToDeleteId = null;
+
+            // Refresh views
+            await loadCustomers();
+            await loadLedgerTotals();
+            await loadPayments();
+            const curCid = document.getElementById('pay-customer-id').value;
+            if (curCid) onCustomerSelected(curCid);
+
+        } catch (err) {
+            ui.toast(err.message || 'Failed to delete payment', 'danger', 'Error');
+        }
+    }
+
+    // 7. Customer Statement Viewer
+    async function loadCustomerStatement(cid) {
+        const container = document.getElementById('statement-content');
+        if (!cid) {
+            container.innerHTML = `<div class="text-center py-5 text-muted">Select a customer above to view ledger statement</div>`;
+            return;
+        }
+
+        const from = document.getElementById('stmt-from-date').value;
+        const to = document.getElementById('stmt-to-date').value;
+
+        container.innerHTML = `<div class="text-center py-5 text-muted"><div class="spinner-border text-primary me-2"></div>Loading statement...</div>`;
+
+        try {
+            const res = await api.get(`api/statement.php?customer_id=${cid}&from=${from}&to=${to}`);
+            const cust = res.customer;
+            const biz = res.business;
+            const entries = res.entries || [];
+            const openBal = parseFloat(res.opening_balance || 0);
+            const closeBal = parseFloat(res.closing_balance || 0);
+
+            let statusBadge = '';
+            if (closeBal > 0) {
+                statusBadge = `<span class="statement-badge-due">Pending Dues: ₹${closeBal.toFixed(2)}</span>`;
+            } else if (closeBal < 0) {
+                statusBadge = `<span class="statement-badge-advance">Advance Credit: ₹${Math.abs(closeBal).toFixed(2)}</span>`;
+            } else {
+                statusBadge = `<span class="statement-badge-clear">Balance: ₹0.00 (All Clear)</span>`;
+            }
+
+            let rowsHtml = `
+                <tr>
+                    <td class="fw-semibold">${res.period.from}</td>
+                    <td colspan="3"><strong>Opening Balance</strong> (brought forward)</td>
+                    <td class="text-end fw-bold">₹${openBal.toFixed(2)}</td>
+                </tr>
+            `;
+
+            if (entries.length === 0) {
+                rowsHtml += `<tr><td colspan="5" class="text-center py-3 text-muted">No transactions during this period.</td></tr>`;
+            } else {
+                rowsHtml += entries.map(e => {
+                    const debitText = e.debit > 0 ? `₹${parseFloat(e.debit).toFixed(2)}` : '—';
+                    const creditText = e.credit > 0 ? `₹${parseFloat(e.credit).toFixed(2)}` : '—';
+                    const balClass = e.running_balance > 0 ? 'text-danger' : (e.running_balance < 0 ? 'text-success' : 'text-muted');
+
+                    return `
+                        <tr>
+                            <td>${e.entry_date}</td>
+                            <td>
+                                <div>${escapeHtml(e.description)}</div>
+                                <small class="text-muted text-uppercase" style="font-size:0.75rem;">${e.type}</small>
+                            </td>
+                            <td class="text-end text-danger">${debitText}</td>
+                            <td class="text-end text-success">${creditText}</td>
+                            <td class="text-end fw-bold ${balClass}">₹${parseFloat(e.running_balance).toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            container.innerHTML = `
+                <div class="statement-header-box d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="h4 fw-bold text-primary mb-1">${escapeHtml(biz.name)}</h2>
+                        <div class="text-muted small">${biz.address ? escapeHtml(biz.address) + ' • ' : ''}Phone: ${escapeHtml(biz.phone)}</div>
+                        ${biz.upi_id ? `<div class="text-muted small">UPI ID: <strong>${escapeHtml(biz.upi_id)}</strong></div>` : ''}
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-primary px-3 py-2 fs-6 mb-1">Customer Statement</span>
+                        <div class="text-muted small">Period: ${res.period.from} to ${res.period.to}</div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Statement For:</span>
+                        <h5 class="fw-bold mb-0">${escapeHtml(cust.name)}</h5>
+                        <div class="text-muted small">${escapeHtml(cust.mobile)}</div>
+                        <div class="text-muted small">${cust.address ? escapeHtml(cust.address) : ''}</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span class="text-muted small d-block">Current Standing</span>
+                        ${statusBadge}
+                    </div>
+                </div>
+
+                <table class="table table-bordered table-sm align-middle mb-4">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th class="text-end text-danger" style="width: 120px;">Debit (+)</th>
+                            <th class="text-end text-success" style="width: 120px;">Credit (−)</th>
+                            <th class="text-end" style="width: 130px;">Running Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        ${rowsHtml}
+                    </tbody>
+                    <tfoot class="table-light fw-bold small">
+                        <tr>
+                            <td colspan="2" class="text-end">Period Totals:</td>
+                            <td class="text-end text-danger">₹${parseFloat(res.total_period_debit).toFixed(2)}</td>
+                            <td class="text-end text-success">₹${parseFloat(res.total_period_credit).toFixed(2)}</td>
+                            <td class="text-end ${closeBal > 0 ? 'text-danger' : 'text-success'}">₹${closeBal.toFixed(2)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top text-muted small">
+                    <div>Generated via MilkBook on ${new Date().toLocaleDateString('en-IN')}</div>
+                    <div>Authorized Signature: __________________</div>
+                </div>
+            `;
+
+        } catch (err) {
+            container.innerHTML = `<div class="text-center py-5 text-danger">Failed to load statement: ${err.message}</div>`;
+        }
+    }
+
+    // 8. Event Listeners Setup
+    function setupEventListeners() {
+        // Customer Select changes
+        document.getElementById('pay-customer-id').addEventListener('change', (e) => {
+            onCustomerSelected(e.target.value);
+        });
+
+        // Amount input changes (live hint)
+        document.getElementById('pay-amount').addEventListener('input', updateLiveHint);
+
+        // Form Collect Payment submit
+        document.getElementById('form-collect-payment').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-payment');
+            btn.disabled = true;
+
+            const cid = document.getElementById('pay-customer-id').value;
+            const amount = parseFloat(document.getElementById('pay-amount').value);
+            const pdate = document.getElementById('pay-date').value;
+            const mode = document.querySelector('input[name="pay-mode"]:checked').value;
+            const reference = document.getElementById('pay-reference').value.trim();
+            const note = document.getElementById('pay-note').value.trim();
+
+            try {
+                const res = await api.post('api/payments.php', {
+                    customer_id: cid,
+                    amount: amount,
+                    payment_date: pdate,
+                    mode: mode,
+                    reference: reference || null,
+                    note: note || null
+                });
+
+                ui.toast('Payment saved and ledger updated!', 'success', 'Recorded');
+
+                // Show result banner
+                const banner = document.getElementById('payment-result-banner');
+                const bannerText = document.getElementById('payment-result-text');
+                const writeoffBox = document.getElementById('writeoff-shortcut-container');
+                const writeoffBtn = document.getElementById('btn-shortcut-writeoff');
+
+                banner.classList.remove('d-none');
+                bannerText.textContent = res.message;
+
+                // If shortfall remaining, offer shortcut to write off
+                if (res.balance_after > 0) {
+                    writeoffBox.classList.remove('d-none');
+                    document.getElementById('writeoff-shortcut-label').textContent = `Write off remaining ₹${parseFloat(res.balance_after).toFixed(2)}`;
+                    writeoffBtn.onclick = () => {
+                        openAdjustmentModal(cid, 'writeoff', res.balance_after, `Remaining dues written off after partial payment`);
+                    };
+                } else {
+                    writeoffBox.classList.add('d-none');
+                }
+
+                // Reset inputs except customer
+                document.getElementById('pay-amount').value = '';
+                document.getElementById('pay-reference').value = '';
+                document.getElementById('pay-note').value = '';
+
+                // Reload data
+                await loadCustomers(cid);
+                await loadLedgerTotals();
+                await loadPayments();
+
+            } catch (err) {
+                ui.toast(err.message || 'Failed to record payment', 'danger', 'Error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // Close result banner
+        document.getElementById('btn-close-result-banner').addEventListener('click', () => {
+            document.getElementById('payment-result-banner').classList.add('d-none');
+        });
+
+        // Filter events
+        document.getElementById('filter-customer').addEventListener('change', loadPayments);
+        document.getElementById('filter-mode').addEventListener('change', loadPayments);
+        document.getElementById('filter-from-date').addEventListener('change', loadPayments);
+        document.getElementById('filter-to-date').addEventListener('change', loadPayments);
+        document.getElementById('btn-reset-filters').addEventListener('click', () => {
+            document.getElementById('filter-customer').value = 'all';
+            document.getElementById('filter-mode').value = 'all';
+            document.getElementById('filter-from-date').value = '';
+            document.getElementById('filter-to-date').value = new Date().toISOString().split('T')[0];
+            loadPayments();
+        });
+
+        // Confirm Delete Button
+        document.getElementById('btn-confirm-delete-payment').addEventListener('click', executeDeletePayment);
+
+        // Open Statement Modal Button (if present)
+        document.getElementById('btn-open-statement-modal')?.addEventListener('click', () => {
+            const curCid = document.getElementById('pay-customer-id').value;
+            if (curCid) {
+                document.getElementById('stmt-customer-select').value = curCid;
+                loadCustomerStatement(curCid);
+            }
+            new bootstrap.Modal(document.getElementById('modal-statement')).show();
+        });
+
+        // Statement Load Button
+        document.getElementById('btn-load-statement').addEventListener('click', () => {
+            const cid = document.getElementById('stmt-customer-select').value;
+            loadCustomerStatement(cid);
+        });
+
+        // Open Adjustment Modal Button
+        document.getElementById('btn-open-adjustment-modal').addEventListener('click', () => {
+            const curCid = document.getElementById('pay-customer-id').value;
+            openAdjustmentModal(curCid);
+        });
+
+        // Adjustment Type Hint updater
+        document.getElementById('adj-type').addEventListener('change', (e) => {
+            const typeHints = {
+                writeoff: 'Write-off records a ledger credit to forgive unpaid balances.',
+                discount: 'Discount records a ledger credit to reduce monthly bill amounts.',
+                refund: 'Refund records a ledger debit to return prepaid advance credit to the customer.',
+                manual: 'Manual adjustment allows custom ledger credit or debit with notes.'
+            };
+            document.getElementById('adj-type-hint').textContent = typeHints[e.target.value] || '';
+        });
+
+        // Form Adjustment Submit
+        document.getElementById('form-adjustment').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-adjustment');
+            btn.disabled = true;
+
+            const cid = document.getElementById('adj-customer-id').value;
+            const type = document.getElementById('adj-type').value;
+            const amount = parseFloat(document.getElementById('adj-amount').value);
+            const reason = document.getElementById('adj-reason').value.trim();
+            const entryDate = document.getElementById('adj-date').value;
+
+            try {
+                const res = await api.post('api/adjustments.php', {
+                    customer_id: cid,
+                    type: type,
+                    amount: amount,
+                    reason: reason,
+                    entry_date: entryDate
+                });
+
+                ui.toast(res.message || 'Adjustment recorded in ledger!', 'success', 'Saved');
+                bootstrap.Modal.getInstance(document.getElementById('modal-adjustment')).hide();
+
+                // Reload views
+                await loadCustomers(cid);
+                await loadLedgerTotals();
+                await loadPayments();
+
+            } catch (err) {
+                ui.toast(err.message || 'Failed to save adjustment', 'danger', 'Error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // Helper: Open Adjustment modal with pre-fills
+    function openAdjustmentModal(cid = '', type = 'writeoff', amount = '', reason = '') {
+        if (cid) document.getElementById('adj-customer-id').value = cid;
+        document.getElementById('adj-type').value = type;
+        if (amount) document.getElementById('adj-amount').value = parseFloat(amount).toFixed(2);
+        if (reason) document.getElementById('adj-reason').value = reason;
+        new bootstrap.Modal(document.getElementById('modal-adjustment')).show();
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    </script>
+</body>
+</html>

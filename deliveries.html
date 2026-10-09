@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deliveries - MilkBook</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.1">
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-controls="milkNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a></li>
+                    <li class="nav-item"><a class="nav-link" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content" style="padding-bottom: 7.5rem;">
+        <!-- Page Header & Tab Navigation -->
+        <header class="page-header pb-0 mb-3">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-truck text-primary"></i> Daily Deliveries</h1>
+                        <p class="page-subtitle">Morning route distribution and monthly milk register</p>
+                    </div>
+                </div>
+
+                <!-- Tabs: Daily Sheet vs Monthly Register -->
+                <ul class="nav nav-tabs border-bottom-0" id="deliveryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-dark active fw-semibold px-4" id="tab-daily-btn" data-bs-toggle="tab" data-bs-target="#tab-daily" type="button" role="tab">
+                            <i class="bi bi-clipboard2-check me-1 text-primary"></i> Daily Sheet
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-dark fw-semibold px-4" id="tab-register-btn" data-bs-toggle="tab" data-bs-target="#tab-register" type="button" role="tab">
+                            <i class="bi bi-calendar3 me-1 text-primary"></i> Monthly Register
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <div class="tab-content" id="deliveryTabsContent">
+            <!-- =========================================================
+                 TAB 1: DAILY SHEET (MOBILE-FIRST)
+            ========================================================== -->
+            <div class="tab-pane fade show active" id="tab-daily" role="tabpanel">
+                <!-- Date Bar & Controls -->
+                <div class="container-fluid px-3 px-md-4 mb-3">
+                    <div class="card-milk p-3">
+                        <div class="row g-2 align-items-center justify-content-between">
+                            <!-- Date Navigator -->
+                            <div class="col-12 col-md-6 d-flex align-items-center gap-2">
+                                <button class="btn btn-light border px-2 py-2" id="btn-prev-day" title="Previous Day">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" class="form-control fw-bold text-primary" id="sheet-date-input">
+                                </div>
+                                <button class="btn btn-light border px-2 py-2" id="btn-next-day" title="Next Day">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary px-3 py-2 fw-semibold" id="btn-today">
+                                    Today
+                                </button>
+                            </div>
+
+                            <!-- Search Filter -->
+                            <div class="col-12 col-md-5">
+                                <div class="search-input-group">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" class="form-control" id="sheet-search-input" placeholder="Search customer on route...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sticky Running Stats Header -->
+                <div class="delivery-sticky-header mb-3">
+                    <div class="container-fluid px-3 px-md-4">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <span class="small text-muted fw-semibold d-block">TOTAL LITRES</span>
+                                    <span class="fs-5 fw-bold text-primary font-monospace" id="stat-total-litres">0.00 L</span>
+                                </div>
+                                <div class="vr"></div>
+                                <div>
+                                    <span class="small text-muted fw-semibold d-block">DELIVERED</span>
+                                    <span class="fs-6 fw-bold text-success" id="stat-delivered-count">0</span>
+                                </div>
+                                <div>
+                                    <span class="small text-muted fw-semibold d-block">SKIPPED</span>
+                                    <span class="fs-6 fw-bold text-danger" id="stat-skipped-count">0</span>
+                                </div>
+                                <div class="d-none d-sm-block">
+                                    <span class="small text-muted fw-semibold d-block">CHANGED</span>
+                                    <span class="fs-6 fw-bold text-warning" id="stat-changed-count">0</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1" id="btn-mark-all-delivered" title="Mark all customers as delivered with their committed quantity">
+                                    <i class="bi bi-check-all me-1"></i> Mark All Delivered
+                                </button>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill d-none" id="badge-unsaved">
+                                    <i class="bi bi-dot"></i> Unsaved
+                                </span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill d-none" id="badge-saved-status">
+                                    <i class="bi bi-check2"></i> Saved
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Route Progress Bar and Filter Chips -->
+                        <div class="row align-items-center g-2 mt-2">
+                            <div class="col-12 col-md-5">
+                                <div class="d-flex align-items-center justify-content-between small text-muted mb-1">
+                                    <span>Route Progress</span>
+                                    <span id="route-progress-label">0%</span>
+                                </div>
+                                <div class="route-progress-track">
+                                    <div class="route-progress-fill" id="route-progress-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-7 d-flex justify-content-md-end gap-1 flex-wrap" id="attendance-filter-chips">
+                                <button type="button" class="btn btn-sm btn-dark attendance-filter-btn active" data-filter="all" onclick="setAttendanceFilter('all')">All (<span id="count-filter-all">0</span>)</button>
+                                <button type="button" class="btn btn-sm btn-outline-success attendance-filter-btn" data-filter="delivered" onclick="setAttendanceFilter('delivered')">Delivered (<span id="count-filter-delivered">0</span>)</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger attendance-filter-btn" data-filter="skipped" onclick="setAttendanceFilter('skipped')">Skipped (<span id="count-filter-skipped">0</span>)</button>
+                                <button type="button" class="btn btn-sm btn-outline-warning attendance-filter-btn" data-filter="changed" onclick="setAttendanceFilter('changed')">Changed (<span id="count-filter-changed">0</span>)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Route Cards Container -->
+                <div class="container-fluid px-3 px-md-4">
+                    <div id="daily-sheet-container">
+                        <div class="text-center py-5 text-muted">
+                            <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                            <p class="mb-0">Loading daily delivery route...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sticky Bottom Bar -->
+                <div class="delivery-sticky-bottom">
+                    <div class="container-fluid px-0 px-md-2 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <div>
+                                <span class="small text-muted d-none d-sm-inline">Running Total:</span>
+                                <span class="fw-bold fs-5 text-primary ms-sm-1" id="bottom-bar-litres">0.00 L</span>
+                            </div>
+                            <span class="text-muted small">•</span>
+                            <span class="small text-muted" id="bottom-bar-counts">0 / 0 Delivered</span>
+                        </div>
+                        <button class="btn btn-milk-primary btn-lg px-4 shadow" id="btn-save-day">
+                            <i class="bi bi-cloud-arrow-up-fill me-1"></i> Save Day
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 2: MONTHLY REGISTER (NOTEBOOK GRID)
+            ========================================================== -->
+            <div class="tab-pane fade" id="tab-register" role="tabpanel">
+                <div class="container-fluid px-3 px-md-4 mb-3">
+                    <!-- Register Header & Month/Year Selector -->
+                    <div class="card-milk p-3 mb-3">
+                        <div class="row g-2 align-items-center justify-content-between">
+                            <div class="col-12 col-md-6 d-flex align-items-center gap-2">
+                                <button class="btn btn-light border px-2 py-2" id="reg-btn-prev-month" title="Previous Month">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <select class="form-select fw-bold text-primary" id="reg-month-select" style="max-width: 160px;">
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select class="form-select fw-bold text-primary" id="reg-year-select" style="max-width: 110px;">
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                                <button class="btn btn-light border px-2 py-2" id="reg-btn-next-month" title="Next Month">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary px-3 py-2 fw-semibold" id="reg-btn-current-month">
+                                    Current
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-5 d-flex justify-content-md-end gap-3 text-muted small">
+                                <div><span class="badge bg-light text-dark border me-1">0.0</span> Skipped</div>
+                                <div><span class="reg-cell-dash me-1">—</span> Unrecorded</div>
+                                <div><i class="bi bi-lock-fill text-muted me-1"></i> Invoiced</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Register Grid Table Wrapper -->
+                    <div class="register-table-wrapper shadow-sm mb-4" id="register-container">
+                        <div class="text-center py-5 text-muted">
+                            <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                            <p class="mb-0">Loading monthly register...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <nav class="mobile-nav-strip d-md-none">
+        <a href="index.html" class="mobile-nav-item"><i class="bi bi-speedometer2"></i><span>Home</span></a>
+        <a href="deliveries.html" class="mobile-nav-item active"><i class="bi bi-truck"></i><span>Deliveries</span></a>
+        <a href="invoices.html" class="mobile-nav-item"><i class="bi bi-receipt"></i><span>Invoices</span></a>
+        <a href="payments.html" class="mobile-nav-item"><i class="bi bi-cash-coin"></i><span>Payments</span></a>
+        <a href="customers.html" class="mobile-nav-item"><i class="bi bi-people-fill"></i><span>Customers</span></a>
+        <a href="settings.html" class="mobile-nav-item"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
+    </nav>
+
+    <!-- Cell Edit Popover Modal -->
+    <div class="modal fade" id="cellEditModal" tabindex="-1" aria-labelledby="cellEditModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0" id="cellEditModalTitle">Edit Delivery</h6>
+                        <small class="text-muted" id="cell-edit-customer-name"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-3">
+                    <input type="hidden" id="cell-edit-cid" value="">
+                    <input type="hidden" id="cell-edit-date" value="">
+                    <input type="hidden" id="cell-edit-committed" value="">
+
+                    <div class="text-muted small mb-2" id="cell-edit-date-label"></div>
+
+                    <!-- Stepper in Modal -->
+                    <div class="stepper-control mb-3">
+                        <button type="button" class="btn-stepper" id="cell-modal-btn-minus"><i class="bi bi-dash"></i></button>
+                        <span class="stepper-qty-display" id="cell-modal-qty-display">1.00</span>
+                        <button type="button" class="btn-stepper" id="cell-modal-btn-plus"><i class="bi bi-plus"></i></button>
+                    </div>
+
+                    <!-- Quick Chips -->
+                    <div class="d-flex justify-content-center flex-wrap gap-1 mb-2">
+                        <button type="button" class="quick-chip chip-skip" data-qty="0.00">0 (Skip)</button>
+                        <button type="button" class="quick-chip" data-qty="0.25">¼ L</button>
+                        <button type="button" class="quick-chip" data-qty="0.50">½ L</button>
+                        <button type="button" class="quick-chip" data-qty="1.00">1 L</button>
+                        <button type="button" class="quick-chip" id="cell-modal-btn-committed">Committed</button>
+                    </div>
+
+                    <div id="cell-locked-warning" class="alert alert-warning py-1 px-2 small mt-2 d-none">
+                        <i class="bi bi-lock-fill me-1"></i> Already invoiced. Read-only.
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-milk-primary px-3" id="btn-save-cell">Update Cell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Deliveries Page Logic -->
+    <script>
+        // State
+        let currentDateStr = new Date().toISOString().split('T')[0];
+        let dailyCustomers = []; // Items for current date
+        let sheetSearchQuery = '';
+        let isDirty = false;
+
+        // Register State
+        let currentRegMonth = new Date().getMonth() + 1;
+        let currentRegYear = new Date().getFullYear();
+        let registerData = null;
+        let cellEditModal = null;
+
+        // Attendance Filter State
+        let currentAttendanceFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cellEditModal = new bootstrap.Modal(document.getElementById('cellEditModal'));
+
+            // Set up date input
+            const dateInput = document.getElementById('sheet-date-input');
+            dateInput.value = currentDateStr;
+
+            // Date navigation buttons
+            dateInput.addEventListener('change', (e) => {
+                if (confirmDateChange()) {
+                    currentDateStr = e.target.value;
+                    loadDailySheet();
+                } else {
+                    e.target.value = currentDateStr;
+                }
+            });
+
+            document.getElementById('btn-prev-day').addEventListener('click', () => changeDay(-1));
+            document.getElementById('btn-next-day').addEventListener('click', () => changeDay(1));
+            document.getElementById('btn-today').addEventListener('click', () => {
+                const today = new Date().toISOString().split('T')[0];
+                if (currentDateStr !== today && confirmDateChange()) {
+                    currentDateStr = today;
+                    document.getElementById('sheet-date-input').value = currentDateStr;
+                    loadDailySheet();
+                }
+            });
+
+            // Search filter
+            document.getElementById('sheet-search-input').addEventListener('input', (e) => {
+                sheetSearchQuery = e.target.value.trim().toLowerCase();
+                renderDailyCards();
+            });
+
+            // Mark All Delivered button
+            const markAllBtn = document.getElementById('btn-mark-all-delivered');
+            if (markAllBtn) {
+                markAllBtn.addEventListener('click', markAllDelivered);
+            }
+
+            // Save Day button
+            document.getElementById('btn-save-day').addEventListener('click', saveDailySheet);
+
+            // Tab Switching
+            document.getElementById('tab-register-btn').addEventListener('shown.bs.tab', () => {
+                loadMonthlyRegister();
+            });
+
+            // Register month/year controls
+            const monthSelect = document.getElementById('reg-month-select');
+            const yearSelect = document.getElementById('reg-year-select');
+            monthSelect.value = currentRegMonth;
+            yearSelect.value = currentRegYear;
+
+            monthSelect.addEventListener('change', (e) => {
+                currentRegMonth = parseInt(e.target.value);
+                loadMonthlyRegister();
+            });
+            yearSelect.addEventListener('change', (e) => {
+                currentRegYear = parseInt(e.target.value);
+                loadMonthlyRegister();
+            });
+
+            document.getElementById('reg-btn-prev-month').addEventListener('click', () => changeRegisterMonth(-1));
+            document.getElementById('reg-btn-next-month').addEventListener('click', () => changeRegisterMonth(1));
+            document.getElementById('reg-btn-current-month').addEventListener('click', () => {
+                const now = new Date();
+                currentRegMonth = now.getMonth() + 1;
+                currentRegYear = now.getFullYear();
+                monthSelect.value = currentRegMonth;
+                yearSelect.value = currentRegYear;
+                loadMonthlyRegister();
+            });
+
+            // Modal Cell Edit Controls
+            setupCellEditModalControls();
+
+            // Unsaved changes beforeunload warning
+            window.addEventListener('beforeunload', (e) => {
+                if (isDirty) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved delivery entries. Are you sure you want to leave?';
+                }
+            });
+
+            // Initial load
+            loadDailySheet();
+        });
+
+        function confirmDateChange() {
+            if (isDirty) {
+                return confirm('You have unsaved quantity adjustments for today. Changing the date will discard unsaved changes. Continue?');
+            }
+            return true;
+        }
+
+        function changeDay(offsetDays) {
+            if (!confirmDateChange()) return;
+            const [y, m, d] = currentDateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            date.setDate(date.getDate() + offsetDays);
+            currentDateStr = date.toISOString().split('T')[0];
+            document.getElementById('sheet-date-input').value = currentDateStr;
+            loadDailySheet();
+        }
+
+        function setDirtyState(dirty) {
+            isDirty = dirty;
+            const unsavedBadge = document.getElementById('badge-unsaved');
+            const savedBadge = document.getElementById('badge-saved-status');
+            if (dirty) {
+                unsavedBadge.classList.remove('d-none');
+                savedBadge.classList.add('d-none');
+            } else {
+                unsavedBadge.classList.add('d-none');
+            }
+        }
+
+        // =============================================================
+        // DAILY SHEET LOGIC
+        // =============================================================
+        async function loadDailySheet() {
+            setDirtyState(false);
+            const container = document.getElementById('daily-sheet-container');
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                    <p class="mb-0">Loading delivery sheet for ${ui.formatDate(currentDateStr)}...</p>
+                </div>
+            `;
+
+            try {
+                const res = await api.get(`api/deliveries.php?date=${currentDateStr}`);
+                const customers = res.customers || [];
+
+                // Initialize client working quantity: saved_quantity if set, else committed_qty
+                dailyCustomers = customers.map(c => {
+                    const workingQty = (c.saved_quantity !== null) ? c.saved_quantity : c.committed_qty;
+                    return {
+                        ...c,
+                        current_qty: parseFloat(workingQty)
+                    };
+                });
+
+                updateSummaryStats();
+                renderDailyCards();
+
+                // Show saved badge if all rows were saved
+                const savedBadge = document.getElementById('badge-saved-status');
+                if (res.summary && res.summary.is_all_saved) {
+                    savedBadge.classList.remove('d-none');
+                } else {
+                    savedBadge.classList.add('d-none');
+                }
+
+            } catch (err) {
+                console.error('Failed to load daily deliveries:', err);
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Failed to load delivery sheet. Please try again.
+                    </div>
+                `;
+            }
+        }
+
+        function updateSummaryStats() {
+            let totalLitres = 0.00;
+            let deliveredCount = 0;
+            let skippedCount = 0;
+            let changedCount = 0;
+
+            dailyCustomers.forEach(c => {
+                totalLitres += c.current_qty;
+                if (c.current_qty > 0) {
+                    deliveredCount++;
+                } else {
+                    skippedCount++;
+                }
+                if (Math.abs(c.current_qty - c.committed_qty) > 0.001) {
+                    changedCount++;
+                }
+            });
+
+            document.getElementById('stat-total-litres').textContent = totalLitres.toFixed(2) + ' L';
+            document.getElementById('stat-delivered-count').textContent = deliveredCount;
+            document.getElementById('stat-skipped-count').textContent = skippedCount;
+            document.getElementById('stat-changed-count').textContent = changedCount;
+
+            // Route Progress Bar
+            const totalCust = dailyCustomers.length;
+            const pct = totalCust > 0 ? Math.round((deliveredCount / totalCust) * 100) : 0;
+            const fillEl = document.getElementById('route-progress-fill');
+            const labelEl = document.getElementById('route-progress-label');
+            if (fillEl) fillEl.style.width = pct + '%';
+            if (labelEl) labelEl.textContent = `${pct}% (${deliveredCount}/${totalCust} delivered)`;
+
+            // Filter button counts
+            const cntAll = document.getElementById('count-filter-all');
+            const cntDel = document.getElementById('count-filter-delivered');
+            const cntSkip = document.getElementById('count-filter-skipped');
+            const cntChange = document.getElementById('count-filter-changed');
+            if (cntAll) cntAll.textContent = totalCust;
+            if (cntDel) cntDel.textContent = deliveredCount;
+            if (cntSkip) cntSkip.textContent = skippedCount;
+            if (cntChange) cntChange.textContent = changedCount;
+
+            document.getElementById('bottom-bar-litres').textContent = totalLitres.toFixed(2) + ' L';
+            document.getElementById('bottom-bar-counts').textContent = `${deliveredCount} / ${totalCust} Delivered`;
+        }
+
+        window.setAttendanceFilter = function(filter) {
+            currentAttendanceFilter = filter;
+            document.querySelectorAll('#attendance-filter-chips .attendance-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+                if (btn.dataset.filter === filter) {
+                    btn.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-warning');
+                    btn.classList.add(filter === 'delivered' ? 'btn-success' : (filter === 'skipped' ? 'btn-danger' : (filter === 'changed' ? 'btn-warning' : 'btn-dark')));
+                } else {
+                    btn.classList.remove('btn-success', 'btn-danger', 'btn-warning', 'btn-dark');
+                    btn.classList.add(btn.dataset.filter === 'delivered' ? 'btn-outline-success' : (btn.dataset.filter === 'skipped' ? 'btn-outline-danger' : (btn.dataset.filter === 'changed' ? 'btn-outline-warning' : 'btn-outline-dark')));
+                }
+            });
+            renderDailyCards();
+        };
+
+        window.markAllDelivered = function() {
+            if (dailyCustomers.length === 0) return;
+            dailyCustomers.forEach(c => {
+                c.current_qty = c.committed_qty;
+                updateCustomerCardUI(c.customer_id);
+            });
+            setDirtyState(true);
+            updateSummaryStats();
+            ui.toast(`Marked all ${dailyCustomers.length} customers as Delivered!`, 'success');
+        };
+
+        function renderDailyCards() {
+            const container = document.getElementById('daily-sheet-container');
+
+            let list = dailyCustomers;
+            if (sheetSearchQuery) {
+                list = list.filter(c => 
+                    (c.name && c.name.toLowerCase().includes(sheetSearchQuery)) ||
+                    (c.address && c.address.toLowerCase().includes(sheetSearchQuery))
+                );
+            }
+
+            if (currentAttendanceFilter === 'delivered') {
+                list = list.filter(c => c.current_qty > 0);
+            } else if (currentAttendanceFilter === 'skipped') {
+                list = list.filter(c => c.current_qty === 0);
+            } else if (currentAttendanceFilter === 'changed') {
+                list = list.filter(c => Math.abs(c.current_qty - c.committed_qty) > 0.001);
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5 text-muted card-milk p-4">
+                        <i class="bi bi-people fs-1 text-secondary opacity-50 mb-2 d-block"></i>
+                        <h5>No customers match this filter</h5>
+                        <p class="small text-muted mb-0">Check search or choose another filter option.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            list.forEach(c => {
+                const diff = c.current_qty - c.committed_qty;
+                const isChanged = Math.abs(diff) > 0.001;
+                const isSkipped = (c.current_qty === 0);
+                const isDelivered = (c.current_qty > 0);
+                const isLocked = Boolean(c.locked);
+
+                let cardStateClass = '';
+                if (isSkipped) {
+                    cardStateClass = 'is-skipped';
+                } else if (isChanged) {
+                    cardStateClass = 'is-changed';
+                } else if (isDelivered) {
+                    cardStateClass = 'is-delivered';
+                }
+
+                // Diff badge
+                let diffBadgeHtml = '';
+                if (isSkipped) {
+                    diffBadgeHtml = `<span class="diff-badge skipped"><i class="bi bi-x-circle me-1"></i>Skipped</span>`;
+                } else if (isChanged) {
+                    if (diff > 0) {
+                        diffBadgeHtml = `<span class="diff-badge plus"><i class="bi bi-plus"></i>${diff.toFixed(2)} L extra</span>`;
+                    } else {
+                        diffBadgeHtml = `<span class="diff-badge minus"><i class="bi bi-dash"></i>${Math.abs(diff).toFixed(2)} L less</span>`;
+                    }
+                }
+
+                html += `
+                    <div class="card-milk delivery-card ${cardStateClass} p-3 mb-2" id="delivery-card-${c.customer_id}" data-cid="${c.customer_id}">
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="route-badge">#${c.route_order || '-'}</span>
+                                <div>
+                                    <h6 class="mb-0 fw-bold fs-6">${ui.escapeHtml(c.name)}</h6>
+                                    ${c.address ? `<div class="small text-muted text-truncate" style="max-width: 240px;"><i class="bi bi-geo-alt me-1"></i>${ui.escapeHtml(c.address)}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-light text-muted border me-1">Plan: ${c.committed_qty.toFixed(2)} L</span>
+                                <span class="badge bg-light text-success border">₹${c.rate.toFixed(2)}/L</span>
+                                ${isLocked ? `<span class="badge bg-secondary-subtle text-secondary border ms-1"><i class="bi bi-receipt me-1"></i>Billed</span>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- 1-Tap Attendance Marker & Stepper Row -->
+                        <div class="row g-2 align-items-center pt-2 border-top">
+                            <!-- 1-Tap Delivered / Skip Buttons -->
+                            <div class="col-12 col-sm-6">
+                                <div class="attendance-toggle">
+                                    <button type="button" class="btn-attendance btn-delivered ${c.current_qty > 0 ? 'active' : ''}" id="btn-del-${c.customer_id}" onclick="setDelivered(${c.customer_id})">
+                                        <i class="bi bi-check-circle-fill"></i> Delivered (${c.committed_qty.toFixed(2)} L)
+                                    </button>
+                                    <button type="button" class="btn-attendance btn-skip ${c.current_qty === 0 ? 'active' : ''}" id="btn-skip-${c.customer_id}" onclick="setSkipped(${c.customer_id})">
+                                        <i class="bi bi-x-circle-fill"></i> Skip (0 L)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Stepper & Litres Display -->
+                            <div class="col-12 col-sm-6 d-flex align-items-center justify-content-sm-end gap-2">
+                                <div class="stepper-control">
+                                    <button type="button" class="btn-stepper" onclick="stepQty(${c.customer_id}, -0.25)" title="Minus 0.25 L">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="stepper-qty-display" id="display-qty-${c.customer_id}">
+                                        ${c.current_qty.toFixed(2)}
+                                    </span>
+                                    <button type="button" class="btn-stepper" onclick="stepQty(${c.customer_id}, 0.25)" title="Plus 0.25 L">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                <span class="small fw-bold text-muted">L</span>
+                                <div id="diff-badge-wrap-${c.customer_id}">
+                                    ${diffBadgeHtml}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick presets chip bar -->
+                        <div class="d-flex align-items-center flex-wrap gap-1 mt-2 pt-2 border-top border-light">
+                            <span class="small text-muted me-1">Presets:</span>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${c.current_qty === 0.25 ? 'active' : ''}" data-val="0.25" onclick="setPresetQty(${c.customer_id}, 0.25)">¼ L</button>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${c.current_qty === 0.50 ? 'active' : ''}" data-val="0.50" onclick="setPresetQty(${c.customer_id}, 0.50)">½ L</button>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${c.current_qty === 1.00 ? 'active' : ''}" data-val="1.00" onclick="setPresetQty(${c.customer_id}, 1.00)">1 L</button>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${c.current_qty === 1.50 ? 'active' : ''}" data-val="1.50" onclick="setPresetQty(${c.customer_id}, 1.50)">1.5 L</button>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${c.current_qty === 2.00 ? 'active' : ''}" data-val="2.00" onclick="setPresetQty(${c.customer_id}, 2.00)">2 L</button>
+                            <button type="button" class="quick-chip chip-preset-${c.customer_id} ${Math.abs(c.current_qty - c.committed_qty) < 0.001 && c.current_qty > 0 ? 'active' : ''}" data-val="${c.committed_qty}" onclick="setPresetQty(${c.customer_id}, ${c.committed_qty})">Plan (${c.committed_qty.toFixed(2)})</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Fast In-Place Card DOM updater (Zero flicker, zero scroll jump)
+        function updateCustomerCardUI(cid) {
+            const customer = dailyCustomers.find(c => c.customer_id === cid);
+            if (!customer) return;
+
+            const card = document.getElementById(`delivery-card-${cid}`);
+            const displayQty = document.getElementById(`display-qty-${cid}`);
+            const btnDel = document.getElementById(`btn-del-${cid}`);
+            const btnSkip = document.getElementById(`btn-skip-${cid}`);
+            const diffWrap = document.getElementById(`diff-badge-wrap-${cid}`);
+
+            if (displayQty) displayQty.textContent = customer.current_qty.toFixed(2);
+
+            const isDelivered = customer.current_qty > 0;
+            const isSkipped = customer.current_qty === 0;
+            const diff = customer.current_qty - customer.committed_qty;
+            const isChanged = Math.abs(diff) > 0.001;
+
+            if (btnDel) btnDel.classList.toggle('active', isDelivered);
+            if (btnSkip) btnSkip.classList.toggle('active', isSkipped);
+
+            if (card) {
+                card.classList.remove('is-delivered', 'is-skipped', 'is-changed');
+                if (isSkipped) {
+                    card.classList.add('is-skipped');
+                } else if (isChanged) {
+                    card.classList.add('is-changed');
+                } else if (isDelivered) {
+                    card.classList.add('is-delivered');
+                }
+            }
+
+            if (diffWrap) {
+                if (isSkipped) {
+                    diffWrap.innerHTML = `<span class="diff-badge skipped"><i class="bi bi-x-circle me-1"></i>Skipped</span>`;
+                } else if (isChanged) {
+                    if (diff > 0) {
+                        diffWrap.innerHTML = `<span class="diff-badge plus"><i class="bi bi-plus"></i>${diff.toFixed(2)} L extra</span>`;
+                    } else {
+                        diffWrap.innerHTML = `<span class="diff-badge minus"><i class="bi bi-dash"></i>${Math.abs(diff).toFixed(2)} L less</span>`;
+                    }
+                } else {
+                    diffWrap.innerHTML = '';
+                }
+            }
+
+            // Update chips
+            document.querySelectorAll(`.chip-preset-${cid}`).forEach(chip => {
+                const val = parseFloat(chip.dataset.val);
+                const isActive = Math.abs(val - customer.current_qty) < 0.001 && customer.current_qty > 0;
+                chip.classList.toggle('active', isActive);
+            });
+        }
+
+        window.setDelivered = function(cid) {
+            const customer = dailyCustomers.find(c => c.customer_id === cid);
+            if (!customer) return;
+
+            // Set to committed quantity (or 1.00 if committed is 0)
+            customer.current_qty = customer.committed_qty > 0 ? customer.committed_qty : 1.00;
+            updateCustomerCardUI(cid);
+            setDirtyState(true);
+            updateSummaryStats();
+        };
+
+        window.setSkipped = function(cid) {
+            const customer = dailyCustomers.find(c => c.customer_id === cid);
+            if (!customer) return;
+
+            customer.current_qty = 0.00;
+            updateCustomerCardUI(cid);
+            setDirtyState(true);
+            updateSummaryStats();
+        };
+
+        window.stepQty = function(cid, step) {
+            const customer = dailyCustomers.find(c => c.customer_id === cid);
+            if (!customer) return;
+
+            let newQty = customer.current_qty + step;
+            if (newQty < 0) newQty = 0;
+            if (newQty > 20) newQty = 20;
+
+            customer.current_qty = Math.round(newQty * 100) / 100;
+            updateCustomerCardUI(cid);
+            setDirtyState(true);
+            updateSummaryStats();
+        };
+
+        window.setPresetQty = function(cid, qty) {
+            const customer = dailyCustomers.find(c => c.customer_id === cid);
+            if (!customer) return;
+
+            customer.current_qty = Math.round(parseFloat(qty) * 100) / 100;
+            updateCustomerCardUI(cid);
+            setDirtyState(true);
+            updateSummaryStats();
+        };
+
+        async function saveDailySheet() {
+            const saveBtn = document.getElementById('btn-save-day');
+            ui.setLoading(saveBtn, true, 'Saving Day...');
+
+            const payload = {
+                date: currentDateStr,
+                entries: dailyCustomers.map(c => ({
+                    customer_id: c.customer_id,
+                    quantity: c.current_qty
+                }))
+            };
+
+            try {
+                const res = await api.post('api/deliveries.php', payload, { silent: true });
+                setDirtyState(false);
+                document.getElementById('badge-saved-status').classList.remove('d-none');
+                ui.toast(`Saved ${res.saved_count} deliveries for ${ui.formatDate(currentDateStr)} (${res.total_litres} L total)`, 'success');
+                loadDailySheet();
+            } catch (err) {
+                console.error('Failed to save day:', err);
+                ui.toast(err.message || 'Failed to save daily sheet.', 'danger');
+            } finally {
+                ui.setLoading(saveBtn, false);
+            }
+        }
+
+        // =============================================================
+        // MONTHLY REGISTER LOGIC
+        // =============================================================
+        function changeRegisterMonth(offsetMonths) {
+            currentRegMonth += offsetMonths;
+            if (currentRegMonth > 12) {
+                currentRegMonth = 1;
+                currentRegYear++;
+            } else if (currentRegMonth < 1) {
+                currentRegMonth = 12;
+                currentRegYear--;
+            }
+
+            document.getElementById('reg-month-select').value = currentRegMonth;
+            document.getElementById('reg-year-select').value = currentRegYear;
+            loadMonthlyRegister();
+        }
+
+        async function loadMonthlyRegister() {
+            const container = document.getElementById('register-container');
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                    <p class="mb-0">Loading monthly register...</p>
+                </div>
+            `;
+
+            try {
+                registerData = await api.get(`api/deliveries.php?view=register&month=${currentRegMonth}&year=${currentRegYear}`);
+                renderRegisterGrid();
+            } catch (err) {
+                console.error('Failed to load monthly register:', err);
+                container.innerHTML = `
+                    <div class="alert alert-danger m-3">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Failed to load register. Please try again.
+                    </div>
+                `;
+            }
+        }
+
+        function renderRegisterGrid() {
+            const container = document.getElementById('register-container');
+            if (!registerData || !registerData.customers || registerData.customers.length === 0) {
+                container.innerHTML = `<div class="text-center py-5 text-muted">No customers found for this period.</div>`;
+                return;
+            }
+
+            const { days_in_month, customers, day_totals, grand_total_litres, grand_total_amount } = registerData;
+            const today = new Date();
+            const isCurrentMonth = (today.getMonth() + 1 === currentRegMonth && today.getFullYear() === currentRegYear);
+            const currentDay = isCurrentMonth ? today.getDate() : -1;
+
+            let html = `
+                <table class="table table-register align-middle">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">Customer Name</th>
+                            <th style="width: 70px;">Commit</th>
+            `;
+
+            // Day headers 1..N
+            for (let d = 1; d <= days_in_month; d++) {
+                const isToday = (d === currentDay);
+                html += `<th class="${isToday ? 'bg-primary-subtle text-primary fw-bold' : ''}" style="width: 38px;">${d}</th>`;
+            }
+
+            html += `
+                            <th style="width: 80px;" class="bg-light fw-bold">Total L</th>
+                            <th style="width: 90px;" class="bg-light fw-bold">Total ₹</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Rows per customer
+            customers.forEach(c => {
+                html += `
+                    <tr>
+                        <td class="sticky-col">
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="badge bg-light text-muted border" style="font-size: 0.72rem;">#${c.route_order}</span>
+                                <span class="fw-bold text-dark text-truncate" style="max-width: 140px;" title="${ui.escapeHtml(c.name)}">${ui.escapeHtml(c.name)}</span>
+                            </div>
+                        </td>
+                        <td class="small text-muted">${c.committed_qty.toFixed(2)}</td>
+                `;
+
+                // Days cells
+                for (let d = 1; d <= days_in_month; d++) {
+                    const cell = c.days[d];
+                    const isToday = (d === currentDay);
+                    const todayClass = isToday ? 'today-col' : '';
+
+                    if (!cell) {
+                        // Unrecorded day
+                        html += `
+                            <td class="reg-cell ${todayClass}" onclick="openCellEditModal(${c.id}, ${d}, null, false)">
+                                <span class="reg-cell-dash">—</span>
+                            </td>
+                        `;
+                    } else if (cell.not_started) {
+                        html += `<td class="reg-cell not-started" title="Customer had not started yet">·</td>`;
+                    } else {
+                        const qty = cell.quantity;
+                        const isSkipped = (qty === 0);
+                        const isLocked = cell.locked;
+
+                        let cellContent = qty.toString();
+                        if (isSkipped) {
+                            cellContent = `<span class="badge bg-light text-muted border px-1 py-0">0</span>`;
+                        } else if (isLocked) {
+                            cellContent = `<span class="fw-semibold">${qty}</span><i class="bi bi-lock-fill ms-1 text-muted" style="font-size: 0.65rem;"></i>`;
+                        } else {
+                            cellContent = `<span class="fw-semibold">${qty}</span>`;
+                        }
+
+                        html += `
+                            <td class="reg-cell ${todayClass} ${isSkipped ? 'cell-skipped' : ''} ${isLocked ? 'cell-locked' : ''}" 
+                                onclick="openCellEditModal(${c.id}, ${d}, ${qty}, ${isLocked})">
+                                ${cellContent}
+                            </td>
+                        `;
+                    }
+                }
+
+                html += `
+                        <td class="fw-bold text-primary font-monospace">${c.total_litres.toFixed(2)}</td>
+                        <td class="fw-bold text-success">${ui.formatCurrency(c.total_amount)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="sticky-col text-uppercase">Total Litres</th>
+                            <th>-</th>
+            `;
+
+            for (let d = 1; d <= days_in_month; d++) {
+                const dayTotal = day_totals[d]?.litres || 0;
+                const isToday = (d === currentDay);
+                html += `<th class="${isToday ? 'bg-primary-subtle text-primary' : ''}">${dayTotal > 0 ? dayTotal.toFixed(1) : '-'}</th>`;
+            }
+
+            html += `
+                            <th class="text-primary font-monospace">${grand_total_litres.toFixed(2)} L</th>
+                            <th class="text-success">${ui.formatCurrency(grand_total_amount)}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // =============================================================
+        // CELL EDIT MODAL
+        // =============================================================
+        let cellModalCurrentQty = 1.00;
+
+        function setupCellEditModalControls() {
+            document.getElementById('cell-modal-btn-minus').addEventListener('click', () => {
+                cellModalCurrentQty = Math.max(0, Math.round((cellModalCurrentQty - 0.25) * 100) / 100);
+                updateCellModalDisplay();
+            });
+
+            document.getElementById('cell-modal-btn-plus').addEventListener('click', () => {
+                cellModalCurrentQty = Math.min(20, Math.round((cellModalCurrentQty + 0.25) * 100) / 100);
+                updateCellModalDisplay();
+            });
+
+            document.querySelectorAll('#cellEditModal .quick-chip[data-qty]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    cellModalCurrentQty = parseFloat(btn.dataset.qty);
+                    updateCellModalDisplay();
+                });
+            });
+
+            document.getElementById('cell-modal-btn-committed').addEventListener('click', () => {
+                const comm = parseFloat(document.getElementById('cell-edit-committed').value) || 1.00;
+                cellModalCurrentQty = comm;
+                updateCellModalDisplay();
+            });
+
+            document.getElementById('btn-save-cell').addEventListener('click', saveCellEdit);
+        }
+
+        function updateCellModalDisplay() {
+            document.getElementById('cell-modal-qty-display').textContent = cellModalCurrentQty.toFixed(2);
+        }
+
+        window.openCellEditModal = function(cid, day, currentQty = null, isLocked = false) {
+            const customer = registerData?.customers?.find(x => x.id === cid);
+            const name = customer ? customer.name : '';
+            const committedQty = customer ? customer.committed_qty : 1.00;
+
+            const dateStr = `${currentRegYear}-${String(currentRegMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            document.getElementById('cell-edit-cid').value = cid;
+            document.getElementById('cell-edit-date').value = dateStr;
+            document.getElementById('cell-edit-committed').value = committedQty;
+            document.getElementById('cell-edit-customer-name').textContent = name;
+            document.getElementById('cell-edit-date-label').textContent = `${ui.formatDate(dateStr)} (Day ${day})`;
+
+            cellModalCurrentQty = (currentQty !== null) ? currentQty : committedQty;
+            updateCellModalDisplay();
+
+            const saveBtn = document.getElementById('btn-save-cell');
+            const lockedWarning = document.getElementById('cell-locked-warning');
+
+            if (isLocked) {
+                saveBtn.disabled = true;
+                lockedWarning.classList.remove('d-none');
+            } else {
+                saveBtn.disabled = false;
+                lockedWarning.classList.add('d-none');
+            }
+
+            cellEditModal.show();
+        };
+
+        async function saveCellEdit() {
+            const cid = parseInt(document.getElementById('cell-edit-cid').value);
+            const date = document.getElementById('cell-edit-date').value;
+            const saveBtn = document.getElementById('btn-save-cell');
+
+            ui.setLoading(saveBtn, true, 'Updating...');
+
+            try {
+                await api.put('api/deliveries.php', {
+                    customer_id: cid,
+                    date: date,
+                    quantity: cellModalCurrentQty
+                }, { silent: true });
+
+                ui.toast(`Delivery updated for ${ui.formatDate(date)}`, 'success');
+                cellEditModal.hide();
+                loadMonthlyRegister();
+            } catch (err) {
+                console.error('Failed to update cell:', err);
+                ui.toast(err.message || 'Failed to update cell.', 'danger');
+            } finally {
+                ui.setLoading(saveBtn, false);
+            }
+        }
+    </script>
+</body>
+</html>

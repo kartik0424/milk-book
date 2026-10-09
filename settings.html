@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings & Milk Rates - MilkBook</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.1">
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-controls="milkNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-gear-fill text-primary"></i> Business Settings & Milk Rates</h1>
+                        <p class="page-subtitle">Configure your dairy details, UPI ID for payments, and standard milk rates</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-md-4">
+            <div class="row g-4">
+                <!-- Left Column: Milk Rate Management -->
+                <div class="col-12 col-lg-5">
+                    <!-- Current Active Rate Card -->
+                    <div class="rate-current-card mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill">Active Milk Rate</span>
+                            <i class="bi bi-shield-check fs-4 opacity-75"></i>
+                        </div>
+                        <div class="rate-current-value" id="current-rate-display">₹--.--</div>
+                        <div class="small opacity-75 mt-1" id="current-rate-effective">Standard rate applied to daily deliveries</div>
+                    </div>
+
+                    <!-- Add New Rate Form Card -->
+                    <div class="card-milk p-3 p-md-4 mb-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-plus-circle text-primary"></i> Update Milk Rate
+                        </h5>
+                        <p class="small text-muted mb-3">
+                            Setting a new rate will apply to all future deliveries on and after the selected effective date. Past delivery calculations remain preserved.
+                        </p>
+                        <form id="rate-form" novalidate>
+                            <div class="mb-3">
+                                <label for="new-rate" class="form-label fw-semibold">New Rate per Litre (₹) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" step="0.50" min="1" max="500" class="form-control" id="new-rate" placeholder="e.g. 68.00" required>
+                                </div>
+                                <div class="invalid-feedback" id="rate-feedback">Please enter a valid rate greater than 0.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="effective-date" class="form-label fw-semibold">Effective From Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="effective-date" required>
+                                <div class="form-text small text-muted">Deliveries on or after this date use this rate.</div>
+                                <div class="invalid-feedback" id="date-feedback">Please select a valid date.</div>
+                            </div>
+                            <button type="submit" class="btn btn-milk-primary w-100" id="btn-save-rate">
+                                <i class="bi bi-check2-circle"></i> Save New Rate
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Rate History Card -->
+                    <div class="card-milk p-3 p-md-4 mb-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-primary"></i> Rate Change History
+                        </h5>
+                        <div id="rate-history-container">
+                            <div class="text-center py-4 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                <p class="mb-0 small">Loading rate history...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Business Profile & Invoicing Settings -->
+                <div class="col-12 col-lg-7">
+                    <div class="card-milk p-3 p-md-4 mb-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-shop text-primary"></i> Dairy Business Profile
+                        </h5>
+                        <p class="small text-muted mb-4">
+                            These details appear on monthly customer invoices, receipts, and payment request messages.
+                        </p>
+                        <form id="settings-form" novalidate>
+                            <!-- Business Name -->
+                            <div class="mb-3">
+                                <label for="set-name" class="form-label fw-semibold">Dairy / Business Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="set-name" name="business_name" placeholder="e.g. Krishna Dairy Farm" required maxlength="100">
+                                <div class="invalid-feedback">Business name is required.</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <!-- Mobile / Phone -->
+                                <div class="col-12 col-md-6">
+                                    <label for="set-phone" class="form-label fw-semibold">Contact Mobile <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted">+91</span>
+                                        <input type="tel" class="form-control" id="set-phone" name="business_phone" placeholder="9876543210" required pattern="[6-9][0-9]{9}">
+                                    </div>
+                                    <div class="invalid-feedback" id="feedback-phone">Valid 10-digit mobile required.</div>
+                                </div>
+                                <!-- UPI ID -->
+                                <div class="col-12 col-md-6">
+                                    <label for="set-upi" class="form-label fw-semibold">UPI ID for Payment Collection</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-qr-code"></i></span>
+                                        <input type="text" class="form-control" id="set-upi" name="upi_id" placeholder="e.g. mobile@upi">
+                                    </div>
+                                    <div class="form-text small text-muted">Used for generating UPI pay links & QR codes.</div>
+                                    <div class="invalid-feedback" id="feedback-upi">Invalid UPI ID format.</div>
+                                </div>
+                            </div>
+
+                            <!-- Business Address -->
+                            <div class="mb-3">
+                                <label for="set-address" class="form-label fw-semibold">Address / Location</label>
+                                <textarea class="form-control" id="set-address" name="business_address" rows="2" placeholder="Dairy location or distribution point..."></textarea>
+                            </div>
+
+                            <div class="border-top pt-3 mt-3">
+                                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-receipt me-1"></i> Invoice Options</h6>
+                                <!-- Invoice Prefix -->
+                                <div class="mb-3">
+                                    <label for="set-prefix" class="form-label fw-semibold">Invoice Number Prefix</label>
+                                    <div class="input-group" style="max-width: 250px;">
+                                        <input type="text" class="form-control" id="set-prefix" name="invoice_prefix" placeholder="MB-" maxlength="10">
+                                    </div>
+                                    <div class="form-text small text-muted">e.g. "MB-" produces invoice numbers like MB-2026-09-001.</div>
+                                </div>
+
+                                <!-- Invoice Footer Note -->
+                                <div class="mb-4">
+                                    <label for="set-footer" class="form-label fw-semibold">Invoice Footer Note / Payment Terms</label>
+                                    <textarea class="form-control" id="set-footer" name="invoice_footer" rows="2" placeholder="e.g. Thank you for your business! Please clear dues before the 5th."></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-milk-primary px-4 shadow-sm" id="btn-save-settings">
+                                <i class="bi bi-check-lg"></i> Save All Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <nav class="mobile-nav-strip d-md-none">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Home</span>
+        </a>
+        <a href="deliveries.html" class="mobile-nav-item">
+            <i class="bi bi-truck"></i>
+            <span>Deliveries</span>
+        </a>
+        <a href="invoices.html" class="mobile-nav-item">
+            <i class="bi bi-receipt"></i>
+            <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="mobile-nav-item">
+            <i class="bi bi-cash-coin"></i>
+            <span>Payments</span>
+        </a>
+        <a href="customers.html" class="mobile-nav-item">
+            <i class="bi bi-people-fill"></i>
+            <span>Customers</span>
+        </a>
+        <a href="settings.html" class="mobile-nav-item active">
+            <i class="bi bi-gear-fill"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Settings Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date for new rate to today
+            document.getElementById('effective-date').value = new Date().toISOString().split('T')[0];
+
+            loadSettings();
+            loadRates();
+
+            // Forms
+            document.getElementById('settings-form').addEventListener('submit', handleSettingsSubmit);
+            document.getElementById('rate-form').addEventListener('submit', handleRateSubmit);
+        });
+
+        async function loadSettings() {
+            try {
+                const settings = await api.get('api/settings.php');
+                if (!settings) return;
+
+                document.getElementById('set-name').value = settings.business_name || '';
+                document.getElementById('set-phone').value = settings.business_phone || '';
+                document.getElementById('set-upi').value = settings.upi_id || '';
+                document.getElementById('set-address').value = settings.business_address || '';
+                document.getElementById('set-prefix').value = settings.invoice_prefix || 'MB-';
+                document.getElementById('set-footer').value = settings.invoice_footer || '';
+            } catch (err) {
+                console.error('Failed to load settings:', err);
+            }
+        }
+
+        async function loadRates() {
+            const historyContainer = document.getElementById('rate-history-container');
+            try {
+                const res = await api.get('api/rates.php');
+                const current = res.current_rate;
+                const history = res.history || [];
+
+                if (current) {
+                    document.getElementById('current-rate-display').textContent = ui.formatCurrency(current.rate_per_litre) + ' / L';
+                    document.getElementById('current-rate-effective').textContent = `Effective since ${ui.formatDate(current.effective_from)}`;
+                } else {
+                    document.getElementById('current-rate-display').textContent = 'No rate set';
+                }
+
+                if (history.length === 0) {
+                    historyContainer.innerHTML = '<p class="text-muted small mb-0">No historical rates recorded.</p>';
+                    return;
+                }
+
+                let historyHtml = '<div class="timeline mt-2">';
+                history.forEach(item => {
+                    historyHtml += `
+                        <div class="timeline-item ${item.is_current ? 'active-rate' : ''}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="fw-bold fs-6 text-dark">${ui.formatCurrency(item.rate_per_litre)} / Litre</span>
+                                ${item.is_current 
+                                    ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Current Active</span>' 
+                                    : '<span class="badge bg-light text-muted border">Past Rate</span>'}
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <i class="bi bi-calendar-event me-1"></i>Effective from: <strong>${ui.formatDate(item.effective_from)}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+                historyHtml += '</div>';
+                historyContainer.innerHTML = historyHtml;
+
+            } catch (err) {
+                console.error('Failed to load rates:', err);
+            }
+        }
+
+        async function handleSettingsSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('settings-form');
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            const submitBtn = document.getElementById('btn-save-settings');
+            ui.setLoading(submitBtn, true, 'Saving Profile...');
+
+            const payload = {
+                business_name: document.getElementById('set-name').value.trim(),
+                business_phone: document.getElementById('set-phone').value.trim(),
+                business_address: document.getElementById('set-address').value.trim(),
+                upi_id: document.getElementById('set-upi').value.trim(),
+                invoice_prefix: document.getElementById('set-prefix').value.trim(),
+                invoice_footer: document.getElementById('set-footer').value.trim()
+            };
+
+            try {
+                await api.put('api/settings.php', payload, { silent: true });
+                ui.toast('Business settings updated successfully!', 'success');
+            } catch (err) {
+                if (err.fields) {
+                    if (err.fields.business_phone) {
+                        const el = document.getElementById('set-phone');
+                        el.classList.add('is-invalid');
+                        document.getElementById('feedback-phone').textContent = err.fields.business_phone;
+                    }
+                    if (err.fields.upi_id) {
+                        const el = document.getElementById('set-upi');
+                        el.classList.add('is-invalid');
+                        document.getElementById('feedback-upi').textContent = err.fields.upi_id;
+                    }
+                } else {
+                    ui.toast(err.message || 'Failed to update settings', 'danger');
+                }
+            } finally {
+                ui.setLoading(submitBtn, false);
+            }
+        }
+
+        async function handleRateSubmit(e) {
+            e.preventDefault();
+            const rateInput = document.getElementById('new-rate');
+            const dateInput = document.getElementById('effective-date');
+            const submitBtn = document.getElementById('btn-save-rate');
+
+            rateInput.classList.remove('is-invalid');
+            dateInput.classList.remove('is-invalid');
+
+            const rateVal = parseFloat(rateInput.value);
+            const dateVal = dateInput.value;
+
+            if (isNaN(rateVal) || rateVal <= 0) {
+                rateInput.classList.add('is-invalid');
+                return;
+            }
+
+            if (!dateVal) {
+                dateInput.classList.add('is-invalid');
+                return;
+            }
+
+            ui.setLoading(submitBtn, true, 'Adding Rate...');
+
+            try {
+                await api.post('api/rates.php', {
+                    rate_per_litre: rateVal,
+                    effective_from: dateVal
+                }, { silent: true });
+
+                ui.toast(`New rate of ${ui.formatCurrency(rateVal)} saved successfully!`, 'success');
+                rateInput.value = '';
+                loadRates();
+            } catch (err) {
+                if (err.fields?.rate_per_litre) {
+                    rateInput.classList.add('is-invalid');
+                    document.getElementById('rate-feedback').textContent = err.fields.rate_per_litre;
+                } else if (err.fields?.effective_from) {
+                    dateInput.classList.add('is-invalid');
+                    document.getElementById('date-feedback').textContent = err.fields.effective_from;
+                } else {
+                    ui.toast(err.message || 'Failed to add rate', 'danger');
+                }
+            } finally {
+                ui.setLoading(submitBtn, false);
+            }
+        }
+    </script>
+</body>
+</html>

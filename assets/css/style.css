@@ -1,0 +1,1377 @@
+/* MilkBook - Clean, Simple & Minimalist Stylesheet */
+/* Mobile-first, ergonomic touch targets, refined typography & responsive layouts */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --mb-primary: #0f172a;
+    --mb-primary-dark: #020617;
+    --mb-primary-light: #334155;
+    --mb-accent: #2563eb;
+    --mb-accent-light: #eff6ff;
+    --mb-accent-hover: #1d4ed8;
+    --mb-bg: #f8fafc;
+    --mb-surface: #ffffff;
+    --mb-border: #e2e8f0;
+    --mb-border-subtle: #f1f5f9;
+    --mb-text-main: #0f172a;
+    --mb-text-muted: #64748b;
+    --mb-success: #10b981;
+    --mb-success-light: #ecfdf5;
+    --mb-success-dark: #047857;
+    --mb-warning: #f59e0b;
+    --mb-warning-light: #fffbeb;
+    --mb-warning-dark: #b45309;
+    --mb-danger: #ef4444;
+    --mb-danger-light: #fef2f2;
+    --mb-danger-dark: #b91c1c;
+    --mb-radius-sm: 8px;
+    --mb-radius-md: 12px;
+    --mb-radius-lg: 16px;
+    --mb-radius-pill: 9999px;
+    --mb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --mb-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --mb-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--mb-bg);
+    color: var(--mb-text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-title {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: var(--mb-text-main);
+    letter-spacing: -0.3px;
+}
+
+/* -------------------------------------------------------------
+   Navigation Bar (Simple & Minimalist)
+------------------------------------------------------------- */
+.navbar-milkbook {
+    background: #0f172a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.65rem 0;
+}
+
+.brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: #2563eb;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.navbar-brand {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.4px;
+    color: #ffffff !important;
+}
+
+.navbar-brand span {
+    color: #60a5fa;
+}
+
+.nav-link {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #94a3b8 !important;
+    padding: 0.45rem 0.8rem !important;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link.active {
+    color: #ffffff !important;
+    background: rgba(37, 99, 235, 0.25);
+    font-weight: 600;
+}
+
+/* Mobile Quick Navigation Strip */
+.mobile-nav-strip {
+    background: #ffffff;
+    border-top: 1px solid var(--mb-border);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.35rem 0;
+    height: 54px;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--mb-text-muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    transition: color 0.15s ease;
+    flex: 1;
+}
+
+.mobile-nav-item i {
+    font-size: 1.15rem;
+    margin-bottom: 2px;
+}
+
+.mobile-nav-item.active {
+    color: var(--mb-accent);
+}
+
+/* -------------------------------------------------------------
+   Page Container & Layout
+------------------------------------------------------------- */
+.main-content {
+    flex: 1;
+    padding-bottom: 4.5rem; /* Space for mobile nav bar */
+}
+
+@media (min-width: 768px) {
+    .main-content {
+        padding-bottom: 2rem;
+    }
+}
+
+.page-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--mb-border);
+    padding: 1.25rem 0;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--mb-text-muted);
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+/* -------------------------------------------------------------
+   Cards & Content Containers
+------------------------------------------------------------- */
+.card-milk {
+    background: var(--mb-surface);
+    border: 1px solid var(--mb-border);
+    border-radius: var(--mb-radius-md);
+    box-shadow: var(--mb-shadow-sm);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    overflow: hidden;
+}
+
+.card-milk:hover {
+    box-shadow: var(--mb-shadow-md);
+}
+
+.card-stat {
+    padding: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: var(--mb-radius-md);
+    background: #ffffff;
+    border: 1px solid var(--mb-border);
+    box-shadow: var(--mb-shadow-sm);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.stat-icon.primary {
+    background: var(--mb-accent-light);
+    color: var(--mb-accent);
+}
+
+.stat-icon.success {
+    background: var(--mb-success-light);
+    color: var(--mb-success);
+}
+
+.stat-icon.warning {
+    background: var(--mb-warning-light);
+    color: var(--mb-warning);
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--mb-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* -------------------------------------------------------------
+   Customer Cards (Mobile View)
+------------------------------------------------------------- */
+.customer-card {
+    background: #ffffff;
+    border: 1px solid var(--mb-border);
+    border-radius: var(--mb-radius-md);
+    padding: 1rem;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--mb-shadow-sm);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.customer-card:active {
+    background: #f8fafc;
+    transform: scale(0.99);
+}
+
+.customer-card.inactive-customer {
+    opacity: 0.65;
+    background: #fafafa;
+}
+
+.route-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--mb-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.qty-pill {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.rate-pill {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+}
+
+.rate-pill.custom-rate-pill {
+    background: #fefce8;
+    color: #a16207;
+    border-color: #fef08a;
+}
+
+/* -------------------------------------------------------------
+   Buttons & Inputs
+------------------------------------------------------------- */
+.btn-milk-primary {
+    background: var(--mb-primary);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: var(--mb-radius-sm);
+    padding: 0.55rem 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.btn-milk-primary:hover {
+    background: var(--mb-primary-light);
+    color: #ffffff;
+}
+
+.btn-milk-primary:active {
+    background: var(--mb-primary-dark);
+}
+
+.btn-call {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-call:hover {
+    background: #059669;
+    color: #ffffff;
+}
+
+/* Quantity Presets in Modal */
+.qty-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+}
+
+.qty-chip-btn {
+    border: 1px solid var(--mb-border);
+    background: #ffffff;
+    color: var(--mb-text-main);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.qty-chip-btn:hover, .qty-chip-btn.active {
+    background: var(--mb-primary);
+    color: #ffffff;
+    border-color: var(--mb-primary);
+}
+
+/* -------------------------------------------------------------
+   Search & Filter Bar
+------------------------------------------------------------- */
+.search-input-group {
+    position: relative;
+}
+
+.search-input-group .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mb-text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.search-input-group input {
+    padding-left: 2.5rem;
+    border-radius: 25px;
+    border: 1px solid var(--mb-border);
+    font-size: 0.95rem;
+    height: 44px;
+}
+
+.search-input-group input:focus {
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    border-color: var(--mb-accent);
+}
+
+.filter-pill-group .btn {
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+}
+
+/* -------------------------------------------------------------
+   Desktop Table Polish
+------------------------------------------------------------- */
+.table-milk {
+    background: #ffffff;
+    border-radius: var(--mb-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--mb-border);
+    margin-bottom: 0;
+}
+
+.table-milk th {
+    background: #f8fafc;
+    color: var(--mb-text-muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--mb-border);
+    padding: 0.85rem 1rem;
+}
+
+.table-milk td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--mb-border);
+    font-size: 0.92rem;
+}
+
+.table-milk tbody tr:hover {
+    background-color: #fbfdff;
+}
+
+/* -------------------------------------------------------------
+   Floating Action Button (Mobile)
+------------------------------------------------------------- */
+.fab-btn {
+    position: fixed;
+    bottom: 4.8rem;
+    right: 1.25rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mb-accent) 0%, var(--mb-primary) 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+    border: none;
+    z-index: 1010;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab-btn:active {
+    transform: scale(0.92);
+}
+
+@media (min-width: 768px) {
+    .fab-btn {
+        display: none !important;
+    }
+}
+
+/* -------------------------------------------------------------
+   Rate Timeline & Settings View
+------------------------------------------------------------- */
+.rate-current-card {
+    background: linear-gradient(135deg, #0284c7 0%, #0f3460 100%);
+    color: #ffffff;
+    border-radius: var(--mb-radius-lg);
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
+}
+
+.rate-current-value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -1px;
+}
+
+.timeline-item {
+    border-left: 2px solid var(--mb-border);
+    padding-left: 1.2rem;
+    position: relative;
+    padding-bottom: 1.25rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mb-accent);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+}
+
+.timeline-item.active-rate::before {
+    background: var(--mb-success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+}
+
+/* -------------------------------------------------------------
+   Toast & Modal Customization
+------------------------------------------------------------- */
+.toast-container {
+    z-index: 2000;
+}
+
+.modal-content {
+    border-radius: var(--mb-radius-lg);
+    border: 1px solid var(--mb-border);
+    box-shadow: var(--mb-shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--mb-border);
+    padding: 1.1rem 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--mb-border);
+    padding: 0.9rem 1.5rem;
+}
+
+/* -------------------------------------------------------------
+   Stubs & Coming Soon Placeholders
+------------------------------------------------------------- */
+.stub-card {
+    background: #ffffff;
+    border-radius: var(--mb-radius-lg);
+    border: 2px dashed var(--mb-border);
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.stub-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--mb-accent-light);
+    color: var(--mb-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+}
+
+/* -------------------------------------------------------------
+   Step 2: Deliveries Sheet & Quantity Stepper
+------------------------------------------------------------- */
+/* -------------------------------------------------------------
+   Step 2: Friendly Delivery Attendance Marker & Stepper
+------------------------------------------------------------- */
+.delivery-sticky-header {
+    position: sticky;
+    top: 56px;
+    z-index: 1015;
+    background: #ffffff;
+    border-bottom: 1px solid var(--mb-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    padding: 0.65rem 0;
+}
+
+.route-progress-container {
+    width: 100%;
+    margin-top: 0.4rem;
+}
+
+.route-progress-track {
+    height: 5px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.route-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 4px;
+    transition: width 0.25s ease;
+}
+
+.delivery-card {
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    border-left: 4px solid #cbd5e1;
+    background: #ffffff;
+}
+
+.delivery-card:hover {
+    border-color: #94a3b8;
+}
+
+.delivery-card.is-delivered {
+    border-left-color: var(--mb-success);
+    background: #ffffff;
+}
+
+.delivery-card.is-changed {
+    border-left-color: var(--mb-warning);
+    background: #fffdf7;
+}
+
+.delivery-card.is-skipped {
+    border-left-color: var(--mb-danger);
+    background: #fffafa;
+}
+
+.delivery-card.is-locked {
+    border-left-color: #94a3b8;
+}
+
+/* Friendly 1-Tap Attendance Buttons */
+.attendance-toggle {
+    display: flex;
+    gap: 0.4rem;
+    width: 100%;
+}
+
+.btn-attendance {
+    height: 42px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border: 1.5px solid transparent;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn-attendance.btn-delivered {
+    border-color: #bbf7d0;
+    color: #15803d;
+    background: #f0fdf4;
+}
+
+.btn-attendance.btn-delivered:hover {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.btn-attendance.btn-delivered.active {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.28);
+}
+
+.btn-attendance.btn-skip {
+    border-color: #fecaca;
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.btn-attendance.btn-skip:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.btn-attendance.btn-skip.active {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.28);
+}
+
+.stepper-control {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid var(--mb-border);
+    border-radius: 24px;
+    padding: 2px;
+    height: 42px;
+}
+
+.btn-stepper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid var(--mb-border);
+    color: var(--mb-text-main);
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.btn-stepper:hover:not(:disabled) {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.btn-stepper:active:not(:disabled) {
+    transform: scale(0.92);
+}
+
+.btn-stepper:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.stepper-qty-display {
+    min-width: 58px;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: var(--mb-text-main);
+    padding: 0 0.3rem;
+    line-height: 1;
+}
+
+.diff-badge {
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.diff-badge.plus {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.diff-badge.minus {
+    background: #ffedd5;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+.diff-badge.skipped {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+/* Quick Delivery Chips */
+.quick-chip {
+    border: 1px solid var(--mb-border);
+    background: #ffffff;
+    color: var(--mb-text-muted);
+    font-weight: 600;
+    font-size: 0.76rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    min-width: 36px;
+    text-align: center;
+}
+
+.quick-chip:hover {
+    background: #f1f5f9;
+    color: var(--mb-text-main);
+}
+
+.quick-chip.active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+
+/* Sticky Bottom Action Bar */
+.delivery-sticky-bottom {
+    position: fixed;
+    bottom: 54px; /* Above mobile nav bar */
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid var(--mb-border);
+    padding: 0.65rem 1rem;
+    z-index: 1025;
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+    .delivery-sticky-bottom {
+        bottom: 0;
+        padding: 0.75rem 2rem;
+    }
+}
+
+/* -------------------------------------------------------------
+   Step 2: Monthly Register Notebook Grid
+------------------------------------------------------------- */
+.register-table-wrapper {
+    overflow-x: auto;
+    position: relative;
+    border: 1px solid var(--mb-border);
+    border-radius: var(--mb-radius-md);
+    background: #ffffff;
+    max-height: 72vh;
+}
+
+.table-register {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.84rem;
+}
+
+.table-register th, .table-register td {
+    padding: 0.45rem 0.4rem;
+    text-align: center;
+    vertical-align: middle;
+    border-right: 1px solid #edf2f7;
+    border-bottom: 1px solid #edf2f7;
+    white-space: nowrap;
+}
+
+.table-register thead th {
+    background: #f8fafc;
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+/* Frozen Customer Name Column */
+.table-register .sticky-col {
+    position: sticky;
+    left: 0;
+    background: #ffffff;
+    z-index: 7;
+    text-align: left;
+    padding-left: 0.75rem;
+    min-width: 170px;
+    max-width: 220px;
+    box-shadow: 3px 0 6px rgba(0, 0, 0, 0.04);
+}
+
+.table-register thead .sticky-col {
+    z-index: 8;
+    background: #f8fafc;
+}
+
+.table-register tfoot .sticky-col {
+    z-index: 8;
+    background: #f1f5f9;
+}
+
+.table-register tfoot th {
+    position: sticky;
+    bottom: 0;
+    background: #f1f5f9;
+    z-index: 6;
+    font-weight: 700;
+}
+
+.reg-cell {
+    cursor: pointer;
+    transition: background 0.15s ease;
+    user-select: none;
+    min-width: 38px;
+}
+
+.reg-cell:hover:not(.not-started) {
+    background: #e0f2fe !important;
+}
+
+.reg-cell.today-col {
+    background-color: #f0f9ff;
+    font-weight: 700;
+}
+
+.reg-cell.cell-skipped {
+    color: #94a3b8;
+    background-color: #f8fafc;
+    font-weight: 600;
+}
+
+.reg-cell.cell-locked {
+    background-color: #f1f5f9;
+}
+
+.reg-cell.not-started {
+    background: #fafafa;
+    color: #cbd5e1;
+    cursor: default;
+}
+
+.reg-cell-dash {
+    color: #cbd5e1;
+    font-weight: 600;
+}
+
+/* -------------------------------------------------------------
+   Step 3: Invoices, Printable A4 Sheet & WhatsApp Billing
+------------------------------------------------------------- */
+.invoice-status-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.invoice-status-badge.status-unpaid {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.invoice-status-badge.status-partial {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.invoice-status-badge.status-paid {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.invoice-status-badge.status-overpaid {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+/* Printable A4 Paper Layout */
+.invoice-paper {
+    background: #ffffff;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2.2rem 2.4rem;
+    border-radius: var(--mb-radius-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--mb-border);
+    color: #1e293b;
+    font-size: 0.92rem;
+}
+
+.invoice-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.invoice-meta-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+}
+
+.invoice-meta-val {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Day-wise Calendar Grid on Invoice - Responsive Auto-Fitting */
+.invoice-day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+    gap: 6px;
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.invoice-day-cell {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 3px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.invoice-day-cell:hover {
+    border-color: #94a3b8;
+}
+
+.invoice-day-cell .day-num {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+
+.invoice-day-cell .day-qty {
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.invoice-day-cell.active-delivery {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.invoice-day-cell.active-delivery .day-qty {
+    color: #1d4ed8;
+}
+
+.invoice-day-cell.skipped-cell {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.invoice-day-cell.skipped-cell .day-qty {
+    color: #94a3b8;
+}
+
+.invoice-day-cell.unrecorded-cell {
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+}
+
+.invoice-day-cell.unrecorded-cell .day-qty {
+    color: #cbd5e1;
+}
+
+/* Financial Summary & Payment Boxes */
+.invoice-summary-box {
+    background: #f8fafc;
+    border: 1px solid var(--mb-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.invoice-upi-box {
+    background: #f8fafc;
+    border: 1px solid var(--mb-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.invoice-payable-highlight {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+}
+
+/* Print Specific Rules for True A4 Output */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .navbar, 
+    .page-header, 
+    .mobile-nav-strip, 
+    .btn, 
+    .no-print, 
+    .modal-header, 
+    .modal-footer, 
+    #mb-toast-container,
+    .delivery-sticky-bottom,
+    .fab-btn {
+        display: none !important;
+    }
+
+    .modal {
+        position: static !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    .modal-dialog {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .modal-content {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .modal-body {
+        padding: 0 !important;
+    }
+
+    .invoice-paper {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .invoice-day-grid {
+        grid-template-columns: repeat(auto-fit, minmax(38px, 1fr)) !important;
+        gap: 4px !important;
+        padding: 6px !important;
+    }
+
+    .col-md-6, 
+    .col-sm-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .statement-paper {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+/* -------------------------------------------------------------
+   Step 4: Payments, Adjustments & Statements Styling
+------------------------------------------------------------- */
+.payment-hint-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    color: #166534;
+    transition: all 0.2s ease-in-out;
+}
+
+.payment-hint-box.hint-pending {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.payment-hint-box.hint-advance {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.statement-paper {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 2rem;
+    border: 1px solid var(--mb-border);
+    box-shadow: var(--mb-shadow-sm);
+    color: #1e293b;
+}
+
+.statement-header-box {
+    border-bottom: 2px solid var(--mb-primary);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.statement-badge-due {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.statement-badge-advance {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.statement-badge-clear {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.badge-due {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.badge-advance {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.badge-clear {
+    background-color: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+/* -------------------------------------------------------------
+   Mobile Responsiveness & Minimalist Refinements
+------------------------------------------------------------- */
+.range-quick-chip {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    padding: 0.32rem 0.85rem !important;
+    border-radius: 9999px !important;
+    border: 1px solid #cbd5e1 !important;
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    white-space: nowrap;
+    outline: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.range-quick-chip:hover {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    border-color: #94a3b8 !important;
+}
+
+.range-quick-chip.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+}
+
+.attendance-filter-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 0.3rem 0.75rem;
+}
+
+@media (max-width: 576px) {
+    .page-title {
+        font-size: 1.25rem;
+    }
+    
+    .card-milk {
+        border-radius: 10px;
+        padding: 0.85rem !important;
+    }
+    
+    .btn-attendance {
+        height: 40px;
+        font-size: 0.82rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .stepper-control {
+        height: 38px;
+    }
+
+    .btn-stepper {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .stepper-qty-display {
+        font-size: 1.05rem;
+        min-width: 50px;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .card-stat {
+        padding: 0.85rem;
+        gap: 0.6rem;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.15rem;
+    }
+
+    .main-content {
+        padding-bottom: 6rem !important;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+

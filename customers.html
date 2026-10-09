@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - MilkBook</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.1">
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-controls="milkNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row md-align-items-center justify-content-between gap-3">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-people-fill text-primary"></i> Customer Directory</h1>
+                        <p class="page-subtitle">Manage morning milk delivery routes, daily quantities, and rates</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-milk-primary px-3 shadow-sm d-none d-md-inline-flex" id="btn-open-add-modal-desktop">
+                            <i class="bi bi-person-plus-fill"></i> Add New Customer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-md-4">
+            <!-- Summary Stats Bar -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card-stat">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-active-customers">-</div>
+                            <div class="stat-label">Active Customers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-stat">
+                        <div class="stat-icon success">
+                            <i class="bi bi-cup-straw"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-total-litres">-</div>
+                            <div class="stat-label">Daily Milk (Litres)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-stat">
+                        <div class="stat-icon warning">
+                            <i class="bi bi-currency-rupee"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-standard-rate">-</div>
+                            <div class="stat-label">Standard Rate/L</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-stat">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-total-customers">-</div>
+                            <div class="stat-label">Total in Route</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Bar: Search & Status Filters -->
+            <div class="card-milk p-3 mb-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-12 col-md-6">
+                        <div class="search-input-group">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" class="form-control" id="search-input" placeholder="Search by name, phone, or address..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-md-end align-items-center gap-2">
+                        <span class="text-muted small fw-semibold d-none d-sm-inline">Filter:</span>
+                        <div class="btn-group filter-pill-group w-100 w-md-auto" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-filter="active">Active</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="all">All</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="inactive">Inactive</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Container -->
+            <!-- Mobile Card View (visible on small screens) -->
+            <div class="d-md-none" id="customer-cards-container">
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                    <p class="mb-0">Loading customer directory...</p>
+                </div>
+            </div>
+
+            <!-- Desktop Table View (visible on medium & larger screens) -->
+            <div class="d-none d-md-block card-milk mb-4">
+                <div class="table-responsive">
+                    <table class="table table-milk align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;" class="text-center">Route #</th>
+                                <th>Customer Name</th>
+                                <th>Mobile</th>
+                                <th>Daily Committed</th>
+                                <th>Applied Rate</th>
+                                <th>Ledger Balance</th>
+                                <th class="text-center">Status</th>
+                                <th style="width: 170px;" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-table-body">
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+                                    <p class="mb-0">Loading customer directory...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button for Mobile -->
+    <button class="fab-btn" id="btn-open-add-modal-mobile" title="Add Customer">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <nav class="mobile-nav-strip d-md-none">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="bi bi-speedometer2"></i>
+            <span>Home</span>
+        </a>
+        <a href="deliveries.html" class="mobile-nav-item">
+            <i class="bi bi-truck"></i>
+            <span>Deliveries</span>
+        </a>
+        <a href="invoices.html" class="mobile-nav-item">
+            <i class="bi bi-receipt"></i>
+            <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="mobile-nav-item">
+            <i class="bi bi-cash-coin"></i>
+            <span>Payments</span>
+        </a>
+        <a href="customers.html" class="mobile-nav-item active">
+            <i class="bi bi-people-fill"></i>
+            <span>Customers</span>
+        </a>
+        <a href="settings.html" class="mobile-nav-item">
+            <i class="bi bi-gear-fill"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Add / Edit Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="customer-form" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title fs-5 fw-bold" id="customerModalTitle">
+                            <i class="bi bi-person-plus text-primary me-2"></i>Add Customer
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="customer-id" name="id" value="">
+
+                        <!-- Customer Name -->
+                        <div class="mb-3">
+                            <label for="cust-name" class="form-label fw-semibold">Customer Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cust-name" name="name" placeholder="e.g. Ramesh Sharma" required maxlength="100">
+                            <div class="invalid-feedback" id="feedback-name">Name is required.</div>
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="mb-3">
+                            <label for="cust-mobile" class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted fw-semibold">+91</span>
+                                <input type="tel" class="form-control" id="cust-mobile" name="mobile" placeholder="9823011223" required pattern="[6-9][0-9]{9}">
+                            </div>
+                            <div class="form-text small text-muted">10-digit Indian mobile number for WhatsApp & calls</div>
+                            <div class="invalid-feedback" id="feedback-mobile">Valid 10-digit mobile required.</div>
+                            <div id="warn-mobile-duplicate" class="alert alert-warning py-1 px-2 small mt-2 d-none">
+                                <i class="bi bi-exclamation-circle-fill me-1"></i> <span id="warn-mobile-text"></span>
+                            </div>
+                        </div>
+
+                        <!-- Committed Quantity (0.25 Step) -->
+                        <div class="mb-3">
+                            <label for="cust-qty" class="form-label fw-semibold">Committed Daily Quantity (Litres) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="cust-qty" name="committed_qty" step="0.25" min="0.25" max="50" value="1.00" required>
+                                <span class="input-group-text">Litres</span>
+                            </div>
+                            <!-- Quick Chips -->
+                            <div class="qty-chips">
+                                <button type="button" class="qty-chip-btn" data-qty="0.50">0.50 L</button>
+                                <button type="button" class="qty-chip-btn active" data-qty="1.00">1.00 L</button>
+                                <button type="button" class="qty-chip-btn" data-qty="1.50">1.50 L</button>
+                                <button type="button" class="qty-chip-btn" data-qty="2.00">2.00 L</button>
+                                <button type="button" class="qty-chip-btn" data-qty="2.50">2.50 L</button>
+                            </div>
+                            <div class="invalid-feedback" id="feedback-qty">Must be multiple of 0.25 litres (e.g. 0.5, 1.0, 1.25).</div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <!-- Route Order -->
+                            <div class="col-6">
+                                <label for="cust-route" class="form-label fw-semibold">Route Order</label>
+                                <input type="number" class="form-control" id="cust-route" name="route_order" min="1" placeholder="Auto">
+                                <div class="form-text small text-muted">Morning sequence</div>
+                            </div>
+                            <!-- Start Date -->
+                            <div class="col-6">
+                                <label for="cust-date" class="form-label fw-semibold">Start Date</label>
+                                <input type="date" class="form-control" id="cust-date" name="start_date" required>
+                            </div>
+                        </div>
+
+                        <!-- Optional Custom Rate -->
+                        <div class="mb-3">
+                            <label for="cust-rate" class="form-label fw-semibold">
+                                Custom Rate per Litre (₹) <span class="badge bg-light text-muted border">Optional</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" id="cust-rate" name="custom_rate" step="0.50" min="1" placeholder="Default rate if empty">
+                            </div>
+                            <div class="form-text small text-muted">Leave blank to charge standard rate (<span id="modal-default-rate-label">₹66.00</span>)</div>
+                            <div class="invalid-feedback" id="feedback-rate">Please enter a valid rate.</div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="cust-address" class="form-label fw-semibold">Address / Delivery Point</label>
+                            <textarea class="form-control" id="cust-address" name="address" rows="2" placeholder="House/Flat number, building, landmark..."></textarea>
+                        </div>
+
+                        <!-- Delivery Notes -->
+                        <div class="mb-3">
+                            <label for="cust-notes" class="form-label fw-semibold">Special Instructions / Notes</label>
+                            <input type="text" class="form-control" id="cust-notes" name="notes" placeholder="e.g. Leave in basket, ring bell twice...">
+                        </div>
+
+                        <!-- Active Toggle -->
+                        <div class="form-check form-switch pt-1">
+                            <input class="form-check-input" type="checkbox" role="switch" id="cust-active" name="is_active" checked>
+                            <label class="form-check-label fw-semibold" for="cust-active">Active Customer (included in daily delivery sheet)</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-milk-primary px-4" id="btn-save-customer">Save Customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Customers Logic -->
+    <script>
+        // State
+        let allCustomers = [];
+        let currentFilter = 'active';
+        let searchQuery = '';
+        let standardRate = 66.00;
+        let customerModal = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            customerModal = new bootstrap.Modal(document.getElementById('customerModal'));
+
+            // Initial load
+            loadCustomers();
+
+            // Search input with debounce
+            let searchDebounce = null;
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => {
+                    searchQuery = e.target.value.trim().toLowerCase();
+                    renderCustomers();
+                }, 180);
+            });
+
+            // Filter pills
+            document.querySelectorAll('.filter-pill-group button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill-group button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    loadCustomers();
+                });
+            });
+
+            // Add modal buttons
+            document.getElementById('btn-open-add-modal-desktop').addEventListener('click', openAddModal);
+            document.getElementById('btn-open-add-modal-mobile').addEventListener('click', openAddModal);
+
+            // Form Submit
+            document.getElementById('customer-form').addEventListener('submit', handleFormSubmit);
+
+            // Quantity Chips
+            document.querySelectorAll('.qty-chip-btn').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const qty = chip.dataset.qty;
+                    document.getElementById('cust-qty').value = qty;
+                    updateActiveChip(qty);
+                });
+            });
+
+            document.getElementById('cust-qty').addEventListener('input', (e) => {
+                updateActiveChip(e.target.value);
+            });
+        });
+
+        function updateActiveChip(qty) {
+            const formatted = parseFloat(qty).toFixed(2);
+            document.querySelectorAll('.qty-chip-btn').forEach(chip => {
+                if (chip.dataset.qty === formatted) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+        }
+
+        async function loadCustomers() {
+            try {
+                const params = new URLSearchParams();
+                params.append('status', currentFilter);
+                if (searchQuery) {
+                    params.append('search', searchQuery);
+                }
+
+                const res = await api.get(`api/customers.php?${params.toString()}`);
+                allCustomers = res.customers || [];
+                standardRate = res.summary?.current_default_rate || 66.00;
+
+                // Update summary stats
+                document.getElementById('stat-active-customers').textContent = res.summary?.active_customers ?? 0;
+                document.getElementById('stat-total-litres').textContent = ui.formatQty(res.summary?.total_committed_qty ?? 0);
+                document.getElementById('stat-standard-rate').textContent = ui.formatCurrency(standardRate);
+                document.getElementById('stat-total-customers').textContent = res.summary?.total_customers ?? 0;
+                document.getElementById('modal-default-rate-label').textContent = ui.formatCurrency(standardRate);
+
+                renderCustomers();
+            } catch (err) {
+                console.error('Failed to load customers:', err);
+            }
+        }
+
+        function renderCustomers() {
+            const cardsContainer = document.getElementById('customer-cards-container');
+            const tableBody = document.getElementById('customer-table-body');
+
+            // Apply client-side search query if present
+            let list = allCustomers;
+            if (searchQuery) {
+                list = list.filter(c => 
+                    (c.name && c.name.toLowerCase().includes(searchQuery)) ||
+                    (c.mobile && c.mobile.includes(searchQuery)) ||
+                    (c.address && c.address.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            if (list.length === 0) {
+                const emptyHtml = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-people fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                        <h5>No customers found</h5>
+                        <p class="small text-muted mb-3">Try adjusting your search or add a new customer.</p>
+                        <button class="btn btn-sm btn-outline-primary" onclick="openAddModal()">
+                            <i class="bi bi-plus-lg"></i> Add First Customer
+                        </button>
+                    </div>
+                `;
+                cardsContainer.innerHTML = emptyHtml;
+                tableBody.innerHTML = `<tr><td colspan="8">${emptyHtml}</td></tr>`;
+                return;
+            }
+
+            // 1. Mobile Cards View
+            let cardsHtml = '';
+            list.forEach(c => {
+                const isCustom = c.custom_rate !== null && parseFloat(c.custom_rate) > 0;
+                const rateText = isCustom ? `${ui.formatCurrency(c.custom_rate)} (Custom)` : ui.formatCurrency(c.effective_rate);
+                const rateClass = isCustom ? 'custom-rate-pill' : '';
+
+                const bal = parseFloat(c.balance || 0);
+                let balanceBadge = '';
+                if (bal > 0) {
+                    balanceBadge = `<span class="badge badge-due px-2 py-1"><i class="bi bi-clock-history me-1"></i>Due: ₹${bal.toFixed(2)}</span>`;
+                } else if (bal < 0) {
+                    balanceBadge = `<span class="badge badge-advance px-2 py-1"><i class="bi bi-arrow-up-right-circle me-1"></i>Advance: ₹${Math.abs(bal).toFixed(2)}</span>`;
+                } else {
+                    balanceBadge = `<span class="badge badge-clear px-2 py-1">Clear: ₹0.00</span>`;
+                }
+
+                cardsHtml += `
+                    <div class="customer-card ${c.is_active ? '' : 'inactive-customer'}">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="route-badge">#${c.route_order}</span>
+                                <div>
+                                    <h6 class="mb-0 fw-bold fs-6">${ui.escapeHtml(c.name)}</h6>
+                                    <small class="text-muted"><i class="bi bi-telephone me-1"></i>${ui.escapeHtml(c.mobile)}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <a href="payments.html?customer_id=${c.id}" class="btn btn-sm btn-light border px-2 py-1 text-success" title="Collect Payment">
+                                    <i class="bi bi-cash-coin"></i>
+                                </a>
+                                <a href="payments.html?customer_id=${c.id}#statement" class="btn btn-sm btn-light border px-2 py-1 text-info" title="Statement">
+                                    <i class="bi bi-journal-text"></i>
+                                </a>
+                                <a href="tel:+91${c.mobile}" class="btn-call" title="Call Customer">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </a>
+                                <button class="btn btn-sm btn-light border px-2 py-1" onclick="openEditModal(${c.id})" title="Edit">
+                                    <i class="bi bi-pencil-fill text-primary"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light border px-2 py-1 text-danger" onclick="confirmDeleteCustomer(${c.id})" title="Delete Customer">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        ${c.address ? `<div class="small text-secondary mb-2"><i class="bi bi-geo-alt me-1 text-muted"></i>${ui.escapeHtml(c.address)}</div>` : ''}
+
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-2 border-top">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="qty-pill"><i class="bi bi-droplet-fill"></i> ${ui.formatQty(c.committed_qty)}</span>
+                                <span class="rate-pill ${rateClass}">${rateText}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                ${balanceBadge}
+                                ${c.is_active 
+                                    ? `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">Active</span>` 
+                                    : `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">Inactive</span>`}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            cardsContainer.innerHTML = cardsHtml;
+
+            // 2. Desktop Table View
+            let tableHtml = '';
+            list.forEach(c => {
+                const isCustom = c.custom_rate !== null && parseFloat(c.custom_rate) > 0;
+                const rateBadge = isCustom 
+                    ? `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">${ui.formatCurrency(c.custom_rate)} <small class="fw-normal">(Custom)</small></span>`
+                    : `<span class="badge bg-light text-dark border px-2 py-1">${ui.formatCurrency(c.effective_rate)}</span>`;
+
+                const bal = parseFloat(c.balance || 0);
+                let balanceBadge = '';
+                if (bal > 0) {
+                    balanceBadge = `<span class="badge badge-due px-2 py-1"><i class="bi bi-clock-history me-1"></i>Due: ₹${bal.toFixed(2)}</span>`;
+                } else if (bal < 0) {
+                    balanceBadge = `<span class="badge badge-advance px-2 py-1"><i class="bi bi-arrow-up-right-circle me-1"></i>Advance: ₹${Math.abs(bal).toFixed(2)}</span>`;
+                } else {
+                    balanceBadge = `<span class="badge badge-clear px-2 py-1">Clear: ₹0.00</span>`;
+                }
+
+                tableHtml += `
+                    <tr class="${c.is_active ? '' : 'text-muted opacity-75'}">
+                        <td class="text-center fw-bold text-primary">#${c.route_order}</td>
+                        <td>
+                            <div class="fw-bold text-dark">${ui.escapeHtml(c.name)}</div>
+                            ${c.address ? `<div class="small text-muted text-truncate" style="max-width: 260px;">${ui.escapeHtml(c.address)}</div>` : ''}
+                            ${c.notes ? `<div class="small text-primary"><i class="bi bi-info-circle me-1"></i>${ui.escapeHtml(c.notes)}</div>` : ''}
+                        </td>
+                        <td>
+                            <a href="tel:+91${c.mobile}" class="text-decoration-none fw-semibold text-secondary">
+                                <i class="bi bi-telephone-outbound me-1 text-success"></i>${ui.escapeHtml(c.mobile)}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="qty-pill">${ui.formatQty(c.committed_qty)}</span>
+                        </td>
+                        <td>${rateBadge}</td>
+                        <td>${balanceBadge}</td>
+                        <td class="text-center">
+                            ${c.is_active 
+                                ? `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">Active</span>` 
+                                : `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">Inactive</span>`}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="payments.html?customer_id=${c.id}" class="btn btn-outline-success" title="Collect Payment">
+                                    <i class="bi bi-cash-coin"></i>
+                                </a>
+                                <a href="payments.html?customer_id=${c.id}#statement" class="btn btn-outline-info" title="View Statement">
+                                    <i class="bi bi-journal-text"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-primary" onclick="openEditModal(${c.id})" title="Edit Customer">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmDeleteCustomer(${c.id})" title="Delete Customer">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = tableHtml;
+        }
+
+        function openAddModal() {
+            document.getElementById('customer-form').reset();
+            document.getElementById('customer-id').value = '';
+            document.getElementById('customerModalTitle').innerHTML = `<i class="bi bi-person-plus text-primary me-2"></i>Add Customer`;
+            document.getElementById('btn-save-customer').textContent = 'Create Customer';
+            document.getElementById('cust-qty').value = '1.00';
+            updateActiveChip('1.00');
+            document.getElementById('cust-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('cust-active').checked = true;
+            document.getElementById('warn-mobile-duplicate').classList.add('d-none');
+            
+            // Suggest next route order
+            const maxRoute = allCustomers.reduce((max, c) => Math.max(max, c.route_order || 0), 0);
+            document.getElementById('cust-route').value = maxRoute + 1;
+
+            clearFormErrors();
+            customerModal.show();
+        }
+
+        async function openEditModal(id) {
+            clearFormErrors();
+            try {
+                const c = await api.get(`api/customers.php?id=${id}`);
+                if (!c) return;
+
+                document.getElementById('customer-id').value = c.id;
+                document.getElementById('cust-name').value = c.name || '';
+                document.getElementById('cust-mobile').value = c.mobile || '';
+                document.getElementById('cust-qty').value = parseFloat(c.committed_qty).toFixed(2);
+                updateActiveChip(c.committed_qty);
+                document.getElementById('cust-route').value = c.route_order || '';
+                document.getElementById('cust-date').value = c.start_date || '';
+                document.getElementById('cust-rate').value = c.custom_rate !== null ? c.custom_rate : '';
+                document.getElementById('cust-address').value = c.address || '';
+                document.getElementById('cust-notes').value = c.notes || '';
+                document.getElementById('cust-active').checked = c.is_active === 1;
+
+                document.getElementById('customerModalTitle').innerHTML = `<i class="bi bi-pencil-square text-primary me-2"></i>Edit Customer`;
+                document.getElementById('btn-save-customer').textContent = 'Update Customer';
+                document.getElementById('warn-mobile-duplicate').classList.add('d-none');
+
+                customerModal.show();
+            } catch (err) {
+                console.error('Failed to open customer for edit:', err);
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            clearFormErrors();
+
+            const submitBtn = document.getElementById('btn-save-customer');
+            const id = document.getElementById('customer-id').value;
+            const isEdit = Boolean(id);
+
+            const payload = {
+                name: document.getElementById('cust-name').value.trim(),
+                mobile: document.getElementById('cust-mobile').value.trim(),
+                committed_qty: parseFloat(document.getElementById('cust-qty').value),
+                route_order: parseInt(document.getElementById('cust-route').value) || 0,
+                start_date: document.getElementById('cust-date').value,
+                custom_rate: document.getElementById('cust-rate').value ? parseFloat(document.getElementById('cust-rate').value) : null,
+                address: document.getElementById('cust-address').value.trim(),
+                notes: document.getElementById('cust-notes').value.trim(),
+                is_active: document.getElementById('cust-active').checked ? 1 : 0
+            };
+
+            ui.setLoading(submitBtn, true, isEdit ? 'Updating...' : 'Creating...');
+
+            try {
+                let res;
+                if (isEdit) {
+                    payload.id = parseInt(id);
+                    res = await api.put(`api/customers.php?id=${id}`, payload, { silent: true });
+                    ui.toast(`Customer "${res.customer.name}" updated successfully!`, 'success');
+                } else {
+                    res = await api.post('api/customers.php', payload, { silent: true });
+                    ui.toast(`Customer "${res.customer.name}" added to route #${res.customer.route_order}!`, 'success');
+                }
+
+                if (res.warnings && res.warnings.mobile) {
+                    ui.toast(res.warnings.mobile, 'warning', 'Duplicate Warning');
+                }
+
+                customerModal.hide();
+                loadCustomers();
+            } catch (err) {
+                if (err.fields) {
+                    Object.entries(err.fields).forEach(([field, msg]) => {
+                        const input = document.getElementById(`cust-${field}`);
+                        const feedback = document.getElementById(`feedback-${field}`);
+                        if (input) input.classList.add('is-invalid');
+                        if (feedback) feedback.textContent = msg;
+                    });
+                } else {
+                    ui.toast(err.message || 'Failed to save customer.', 'danger');
+                }
+            } finally {
+                ui.setLoading(submitBtn, false);
+            }
+        }
+
+        function clearFormErrors() {
+            document.querySelectorAll('#customer-form .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.getElementById('warn-mobile-duplicate').classList.add('d-none');
+        }
+
+        async function confirmDeleteCustomer(id, name = null, deliveryCount = null) {
+            const customer = allCustomers.find(c => c.id == id);
+            const custName = customer?.name || name || 'Customer';
+            const bal = customer ? parseFloat(customer.balance || 0) : 0;
+            const entries = customer ? (customer.delivery_count || 0) : (deliveryCount || 0);
+
+            let msg = `Are you sure you want to permanently delete "${custName}"?`;
+            if (bal > 0) {
+                msg += ` Note: Customer has ₹${bal.toFixed(2)} in pending dues.`;
+            }
+            if (entries > 0) {
+                msg += ` All ${entries} recorded delivery entries and ledger history will be permanently erased.`;
+            }
+            msg += ` This action cannot be undone.`;
+
+            const confirmed = await ui.confirm({
+                title: 'Delete Customer',
+                message: msg,
+                confirmText: 'Delete Permanently',
+                confirmClass: 'btn-danger'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                const res = await api.delete(`api/customers.php?id=${id}&force=1`);
+                ui.toast(res.message || `Customer "${custName}" permanently deleted.`, 'success');
+                loadCustomers();
+            } catch (err) {
+                console.error('Delete failed:', err);
+                ui.toast(err.message || 'Failed to delete customer.', 'danger');
+            }
+        }
+    </script>
+</body>
+</html>

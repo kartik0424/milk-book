@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MilkBook</title>
+    <meta name="description" content="Sign in to your MilkBook dairy delivery and billing dashboard.">
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+            <div class="card border-0 shadow-lg" style="border-radius: var(--mb-radius-lg); overflow: hidden;">
+                <div class="p-4 text-center text-white" style="background: linear-gradient(135deg, var(--mb-primary-dark) 0%, var(--mb-primary) 100%);">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-25 rounded-circle mb-3" style="width: 64px; height: 64px;">
+                        <i class="bi bi-droplet-half fs-1 text-white"></i>
+                    </div>
+                    <h2 class="h3 fw-bold mb-1">MilkBook</h2>
+                    <p class="small text-white-50 mb-0">Daily Delivery & Invoicing System</p>
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <div id="login-alert" class="alert alert-danger d-none mb-3 py-2 small" role="alert"></div>
+
+                    <form id="form-login">
+                        <div class="mb-3">
+                            <label for="username" class="form-label small fw-semibold text-secondary">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0" id="username" name="username" value="admin" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-semibold text-secondary">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="Enter password" required>
+                            </div>
+                            <div class="form-text text-muted small">Default: <code>milkman123</code></div>
+                        </div>
+
+                        <button type="submit" id="btn-login" class="btn btn-primary w-100 py-2 fw-semibold" style="border-radius: var(--mb-radius-md);">
+                            <span id="btn-login-spinner" class="spinner-border spinner-border-sm d-none me-1" role="status"></span>
+                            Sign In to MilkBook
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light border-0 text-center py-3">
+                    <small class="text-muted"><i class="bi bi-shield-check text-success me-1"></i>Secure Admin Access</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if already authenticated or auth is disabled
+    try {
+        const res = await fetch('api/auth.php?action=status');
+        const json = await res.json();
+        if (json.success && json.data) {
+            if (json.data.csrf_token) {
+                api.setCsrfToken(json.data.csrf_token);
+            }
+            if (!json.data.auth_enabled || json.data.is_logged_in) {
+                window.location.href = 'index.html';
+                return;
+            }
+        }
+    } catch (e) {
+        // Continue
+    }
+
+    const form = document.getElementById('form-login');
+    const alertBox = document.getElementById('login-alert');
+    const btnSubmit = document.getElementById('btn-login');
+    const spinner = document.getElementById('btn-login-spinner');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.classList.add('d-none');
+        alertBox.textContent = '';
+        btnSubmit.disabled = true;
+        spinner.classList.remove('d-none');
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+            const res = await fetch('api/auth.php?action=login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const json = await res.json();
+            if (json.success) {
+                if (json.data?.csrf_token) {
+                    api.setCsrfToken(json.data.csrf_token);
+                }
+                window.location.href = 'index.html';
+            } else {
+                alertBox.textContent = json.error?.message || 'Login failed. Please check credentials.';
+                alertBox.classList.remove('d-none');
+            }
+        } catch (err) {
+            alertBox.textContent = err.message || 'Unable to connect to server.';
+            alertBox.classList.remove('d-none');
+        } finally {
+            btnSubmit.disabled = false;
+            spinner.classList.add('d-none');
+        }
+    });
+});
+</script>
+</body>
+</html>

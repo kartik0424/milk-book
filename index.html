@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MilkBook</title>
+    <meta name="description" content="Morning dairy delivery dashboard, real-time ledger receivables, advance credit, and WhatsApp collection reminders.">
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.1">
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-milkbook sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <span class="brand-icon"><i class="bi bi-droplet-half"></i></span>
+                <span>Milk<span>Book</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#milkNavbar" aria-controls="milkNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="milkNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="deliveries.html"><i class="bi bi-truck"></i> Deliveries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html"><i class="bi bi-receipt"></i> Invoices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="payments.html"><i class="bi bi-cash-coin"></i> Payments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customers.html"><i class="bi bi-people-fill"></i> Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html"><i class="bi bi-gear-fill"></i> Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard Hero Header -->
+        <header class="page-header">
+            <div class="container-fluid px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                    <div>
+                        <h1 class="page-title"><i class="bi bi-sun-fill text-warning"></i> Morning Dairy Desk</h1>
+                        <p class="page-subtitle" id="dashboard-subtitle">Fresh morning deliveries & monthly billing tracking</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6 fw-semibold" id="today-date-badge">
+                            <i class="bi bi-calendar3 me-1"></i> Today
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-md-4 mb-5">
+            <!-- Unsaved Sheet Warning Banner (Shown if today's delivery sheet not fully logged) -->
+            <div id="alert-unsaved-sheet" class="alert alert-warning border-warning shadow-sm d-none mb-4 p-3 rounded-3" role="alert">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-warning text-dark p-2 rounded-circle d-inline-flex">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading fw-bold mb-0">Today's delivery sheet not saved yet!</h5>
+                            <small class="text-secondary" id="alert-unsaved-sheet-text">Customer deliveries for today need to be verified and saved.</small>
+                        </div>
+                    </div>
+                    <a href="deliveries.html" class="btn btn-warning fw-bold px-3 text-nowrap">
+                        <i class="bi bi-truck me-1"></i> Open Daily Sheet
+                    </a>
+                </div>
+            </div>
+
+            <!-- Key Financial & Operational KPI Cards -->
+            <div class="row g-3 mb-4">
+                <!-- Total Pending Dues (Ledger Source of Truth) -->
+                <div class="col-6 col-md-3">
+                    <div class="card-stat border-start border-4 border-danger">
+                        <div class="stat-icon text-danger bg-danger bg-opacity-10">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-danger" id="dash-pending-dues">₹0.00</div>
+                            <div class="stat-label">Total Pending Dues</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Total Advance Held (Ledger Source of Truth) -->
+                <div class="col-6 col-md-3">
+                    <div class="card-stat border-start border-4 border-success">
+                        <div class="stat-icon text-success bg-success bg-opacity-10">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-success" id="dash-advance-held">₹0.00</div>
+                            <div class="stat-label">Total Advance Held</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- This Month's Billed -->
+                <div class="col-6 col-md-3">
+                    <div class="card-stat border-start border-4 border-primary">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-primary" id="dash-month-billed">₹0.00</div>
+                            <div class="stat-label" id="dash-billed-label">This Month's Billed</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- This Month's Collected -->
+                <div class="col-6 col-md-3">
+                    <div class="card-stat border-start border-4 border-info">
+                        <div class="stat-icon text-info bg-info bg-opacity-10">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-info" id="dash-month-collected">₹0.00</div>
+                            <div class="stat-label" id="dash-collected-label">This Month Collected</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Operations Bar & Quick Action Shortcuts -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-7">
+                    <div class="card-milk p-3 h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-truck text-primary me-2"></i>Today's Delivery Progress</h6>
+                            <span class="badge" id="sheet-status-badge">Checking...</span>
+                        </div>
+                        <div class="row g-2 text-center my-2">
+                            <div class="col-4">
+                                <span class="text-muted small d-block">Committed</span>
+                                <span class="fw-bold fs-6 text-secondary" id="today-committed-litres">0.00 L</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="text-muted small d-block">Delivered</span>
+                                <span class="fw-bold fs-6 text-primary" id="today-delivered-litres">0.00 L</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="text-muted small d-block">Customers Logged</span>
+                                <span class="fw-bold fs-6" id="today-customers-logged">0 / 0</span>
+                            </div>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div id="today-progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <div class="row g-2 h-100">
+                        <div class="col-6">
+                            <a href="payments.html" class="btn btn-outline-success w-100 h-100 p-3 d-flex flex-column align-items-center justify-content-center text-decoration-none shadow-sm rounded-3">
+                                <i class="bi bi-cash-coin fs-3 mb-1"></i>
+                                <span class="fw-bold small">Collect Payment</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="invoices.html" class="btn btn-outline-primary w-100 h-100 p-3 d-flex flex-column align-items-center justify-content-center text-decoration-none shadow-sm rounded-3">
+                                <i class="bi bi-receipt fs-3 mb-1"></i>
+                                <span class="fw-bold small">Invoices & Billing</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Split: Top Pending Receivables (Left) & Advance Credit Held (Right) -->
+            <div class="row g-4 mb-4">
+                <!-- Top Pending Customers Table with WhatsApp Reminder Button -->
+                <div class="col-12 col-lg-8">
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-clock-history me-1"></i> Pending Dues & Reminders</h5>
+                                <small class="text-muted">Ranked by outstanding balance (Ledger source of truth)</small>
+                            </div>
+                            <a href="payments.html" class="btn btn-sm btn-outline-danger">
+                                View All Collections <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light small text-secondary">
+                                        <tr>
+                                            <th class="ps-3">Customer</th>
+                                            <th>Mobile</th>
+                                            <th class="text-end">Pending Due</th>
+                                            <th class="text-end pe-3" style="width: 220px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="top-pending-tbody">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted">
+                                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                Calculating ledger receivables...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advance Credit Customers List -->
+                <div class="col-12 col-lg-4">
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-success"><i class="bi bi-wallet-fill me-1"></i> Advance Credit Held</h5>
+                                <small class="text-muted">Prepaid or overpaid credits</small>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush" id="advance-credit-list">
+                                <li class="list-group-item text-center py-4 text-muted">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    Loading advance balances...
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light border-0 py-2 px-3 text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>Advance credits automatically deduct from the next monthly invoice.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Report Table with CSV Export -->
+            <div class="card border-0 shadow-sm" style="border-radius: var(--mb-radius-md);">
+                <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-table me-1"></i> Monthly Route Report</h5>
+                            <small class="text-muted" id="monthly-report-period-label">Current Billing Month</small>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <select class="form-select form-select-sm" id="report-month-select" style="width: 130px;">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="report-year-select" style="width: 100px;">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                            </select>
+                            <a id="btn-export-csv" href="api/dashboard.php?export=csv" class="btn btn-outline-success btn-sm px-3" download>
+                                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export to CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light small text-secondary">
+                                <tr>
+                                    <th class="ps-3">Customer</th>
+                                    <th>Daily (L)</th>
+                                    <th>Delivered Litres</th>
+                                    <th>Days</th>
+                                    <th>Invoice #</th>
+                                    <th class="text-end">Billed (₹)</th>
+                                    <th class="text-end">Paid (₹)</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-3">Ledger Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-report-tbody">
+                                <tr>
+                                    <td colspan="9" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Loading monthly route report...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <nav class="mobile-nav-strip d-md-none">
+        <a href="index.html" class="mobile-nav-item active">
+            <i class="bi bi-speedometer2"></i>
+            <span>Home</span>
+        </a>
+        <a href="deliveries.html" class="mobile-nav-item">
+            <i class="bi bi-truck"></i>
+            <span>Deliveries</span>
+        </a>
+        <a href="invoices.html" class="mobile-nav-item">
+            <i class="bi bi-receipt"></i>
+            <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="mobile-nav-item">
+            <i class="bi bi-cash-coin"></i>
+            <span>Payments</span>
+        </a>
+        <a href="customers.html" class="mobile-nav-item">
+            <i class="bi bi-people-fill"></i>
+            <span>Customers</span>
+        </a>
+        <a href="settings.html" class="mobile-nav-item">
+            <i class="bi bi-gear-fill"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/ui.js"></script>
+
+    <!-- Dashboard Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await api.initAuth();
+
+            const today = new Date();
+            document.getElementById('today-date-badge').innerHTML = `
+                <i class="bi bi-calendar3 me-1"></i> ${today.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+            `;
+
+            const curMonth = today.getMonth() + 1;
+            const curYear = today.getFullYear();
+            document.getElementById('report-month-select').value = curMonth;
+            document.getElementById('report-year-select').value = curYear;
+            updateExportCsvLink(curMonth, curYear);
+
+            // Event listeners for report filters
+            document.getElementById('report-month-select').addEventListener('change', (e) => {
+                const m = e.target.value;
+                const y = document.getElementById('report-year-select').value;
+                updateExportCsvLink(m, y);
+                loadDashboardData(m, y);
+            });
+            document.getElementById('report-year-select').addEventListener('change', (e) => {
+                const y = e.target.value;
+                const m = document.getElementById('report-month-select').value;
+                updateExportCsvLink(m, y);
+                loadDashboardData(m, y);
+            });
+
+            await loadDashboardData(curMonth, curYear);
+        });
+
+        function updateExportCsvLink(month, year) {
+            const btn = document.getElementById('btn-export-csv');
+            btn.href = `api/dashboard.php?export=csv&report_month=${month}&report_year=${year}`;
+        }
+
+        async function loadDashboardData(reportMonth, reportYear) {
+            try {
+                const data = await api.get(`api/dashboard.php?report_month=${reportMonth}&report_year=${reportYear}`);
+
+                // 1. Unsaved Sheet Alert
+                const sheetAlert = document.getElementById('alert-unsaved-sheet');
+                const sheetBadge = document.getElementById('sheet-status-badge');
+                if (!data.today.sheet_saved) {
+                    sheetAlert.classList.remove('d-none');
+                    document.getElementById('alert-unsaved-sheet-text').textContent = 
+                        `${data.today.pending_sheet_count} of ${data.today.active_customers} active customers have unrecorded milk deliveries today.`;
+                    sheetBadge.className = 'badge bg-warning text-dark';
+                    sheetBadge.innerHTML = `<i class="bi bi-hourglass-split me-1"></i>Sheet Pending (${data.today.recorded_count}/${data.today.active_customers})`;
+                } else {
+                    sheetAlert.classList.add('d-none');
+                    sheetBadge.className = 'badge bg-success';
+                    sheetBadge.innerHTML = `<i class="bi bi-check2-circle me-1"></i>Saved (${data.today.recorded_count}/${data.today.active_customers})`;
+                }
+
+                // 2. Today's Delivery Numbers
+                document.getElementById('today-committed-litres').textContent = `${data.today.committed_litres.toFixed(2)} L`;
+                document.getElementById('today-delivered-litres').textContent = `${data.today.delivered_litres.toFixed(2)} L`;
+                document.getElementById('today-customers-logged').textContent = `${data.today.recorded_count} / ${data.today.active_customers}`;
+                const pct = data.today.active_customers > 0 
+                    ? Math.min(100, Math.round((data.today.recorded_count / data.today.active_customers) * 100)) 
+                    : 0;
+                document.getElementById('today-progress-bar').style.width = `${pct}%`;
+
+                // 3. Financial KPI Cards
+                document.getElementById('dash-pending-dues').textContent = `₹${parseFloat(data.ledger_totals.total_pending_dues).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('dash-advance-held').textContent = `₹${parseFloat(data.ledger_totals.total_advance_held).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('dash-month-billed').textContent = `₹${parseFloat(data.month_totals.billed_amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('dash-month-collected').textContent = `₹${parseFloat(data.month_totals.collected_amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('dash-billed-label').textContent = `${data.month_totals.period_label} Billed`;
+                document.getElementById('dash-collected-label').textContent = `${data.month_totals.period_label} Collected`;
+
+                // 4. Top Pending Customers Table
+                const pendingTbody = document.getElementById('top-pending-tbody');
+                const pendingList = data.top_pending || [];
+                if (pendingList.length === 0) {
+                    pendingTbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted"><i class="bi bi-emoji-smile text-success fs-4 d-block mb-1"></i>No pending dues! All customer accounts are fully paid or in advance.</td></tr>`;
+                } else {
+                    pendingTbody.innerHTML = pendingList.map(p => `
+                        <tr>
+                            <td class="ps-3">
+                                <div class="fw-bold">${escapeHtml(p.name)}</div>
+                                <small class="text-muted">${p.address ? escapeHtml(p.address) : ''}</small>
+                            </td>
+                            <td>
+                                <a href="tel:+91${p.mobile}" class="text-decoration-none text-secondary small">
+                                    <i class="bi bi-telephone me-1 text-success"></i>${p.mobile}
+                                </a>
+                            </td>
+                            <td class="text-end fw-bold text-danger fs-6 font-monospace">₹${parseFloat(p.balance).toFixed(2)}</td>
+                            <td class="text-end pe-3">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <a href="${p.whatsapp_url}" target="_blank" class="btn btn-sm btn-outline-success fw-semibold" title="Send WhatsApp Reminder">
+                                        <i class="bi bi-whatsapp me-1"></i> Remind
+                                    </a>
+                                    <a href="payments.html?customer_id=${p.customer_id}" class="btn btn-sm btn-primary" title="Collect Payment">
+                                        <i class="bi bi-cash-coin me-1"></i> Collect
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                // 5. Advance Credit List
+                const advList = document.getElementById('advance-credit-list');
+                const advanceItems = data.advance_customers || [];
+                if (advanceItems.length === 0) {
+                    advList.innerHTML = `<li class="list-group-item text-center py-4 text-muted">No advance credits held currently.</li>`;
+                } else {
+                    advList.innerHTML = advanceItems.map(a => `
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <div class="fw-bold text-dark">${escapeHtml(a.name)}</div>
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>${a.mobile}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-success fs-6 font-monospace">₹${parseFloat(a.advance).toFixed(2)}</span>
+                                <small class="text-muted d-block" style="font-size:0.75rem;">Credit available</small>
+                            </div>
+                        </li>
+                    `).join('');
+                }
+
+                // 6. Monthly Report Table
+                const repTbody = document.getElementById('monthly-report-tbody');
+                document.getElementById('monthly-report-period-label').textContent = data.monthly_report.period_label;
+                const rows = data.monthly_report.rows || [];
+                if (rows.length === 0) {
+                    repTbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">No active customer records for this month.</td></tr>`;
+                } else {
+                    repTbody.innerHTML = rows.map(r => {
+                        const bal = parseFloat(r.current_balance);
+                        let balClass = bal > 0 ? 'text-danger fw-bold' : (bal < 0 ? 'text-success fw-bold' : 'text-muted');
+                        let balText = bal > 0 ? `+₹${bal.toFixed(2)}` : (bal < 0 ? `-₹${Math.abs(bal).toFixed(2)}` : '₹0.00');
+
+                        const statusMap = {
+                            paid: '<span class="badge bg-success-subtle text-success border border-success-subtle">Paid</span>',
+                            partial: '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Partial</span>',
+                            unpaid: '<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Unpaid</span>',
+                            overpaid: '<span class="badge bg-info-subtle text-info border border-info-subtle">Overpaid</span>',
+                            not_generated: '<span class="badge bg-light text-muted border">Unbilled</span>'
+                        };
+                        const statusBadge = statusMap[r.invoice_status] || r.invoice_status;
+
+                        const invDisplay = r.invoice_no 
+                            ? `<span class="badge bg-light text-primary border font-monospace">#${r.invoice_no}</span>`
+                            : '<span class="text-muted small">—</span>';
+
+                        return `
+                            <tr>
+                                <td class="ps-3 fw-bold">${escapeHtml(r.name)}</td>
+                                <td>${parseFloat(r.committed_qty).toFixed(2)}</td>
+                                <td class="fw-bold font-monospace">${parseFloat(r.delivered_litres).toFixed(2)}</td>
+                                <td>${r.days_delivered}</td>
+                                <td>${invDisplay}</td>
+                                <td class="text-end font-monospace">₹${parseFloat(r.billed_amount).toFixed(2)}</td>
+                                <td class="text-end font-monospace">₹${parseFloat(r.paid_amount).toFixed(2)}</td>
+                                <td>${statusBadge}</td>
+                                <td class="text-end pe-3 font-monospace ${balClass}">${balText}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+            } catch (err) {
+                console.error('Failed to load dashboard:', err);
+                ui.toast('Failed to load dashboard data: ' + err.message, 'danger', 'Error');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>
